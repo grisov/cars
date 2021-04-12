@@ -27,7 +27,7 @@ servers:
 tags:
 - name: addCourse
   description: Add a new training course to the database
-- name: viewAll
+- name: allCourses
   description: Get a list of all training courses available in the database
 
 paths:
@@ -37,75 +37,34 @@ paths:
       description: Add a new training course to the database using GET-method
       operationId: add_get
       parameters:
-      - in: query
-        name: name
-        description: Name of the training course
-        required: true
-        allowEmptyValue: false
-        allowReserved: true
-        style: form
-        explode: false
-        schema:
-          type: string
-        examples:
-          name:
-            value: Technologies
-      - in: query
-        name: start
-        description: Start date of the training course
-        required: true
-        allowEmptyValue: false
-        allowReserved: true
-        style: form
-        explode: false
-        schema:
-          type: string
-          format: date-time
-        examples:
-          start:
-            value: 2021.06.12
-      - in: query
-        name: end
-        description: End date of the training course
-        required: true
-        allowEmptyValue: false
-        allowReserved: true
-        style: form
-        explode: false
-        schema:
-          type: string
-          format: date-time
-        examples:
-          end:
-            value: 2021.09.17
-      - in: query
-        name: amount
-        description: Number of lectures that make up the training course
-        required: true
-        allowEmptyValue: false
-        allowReserved: true
-        style: form
-        explode: false
-        schema:
-          type: integer
-          format: int32
-          minimum: 1
-        examples:
-          amount:
-            value: 20
+      - $ref: '#/components/parameters/courseNameParam'
+      - $ref: '#/components/parameters/startDateParam'
+      - $ref: '#/components/parameters/endDateParam'
+      - $ref: '#/components/parameters/amountParam'
       responses:
         "200":
-          description: Complete information about the added training course
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Course'
+          $ref: '#/components/responses/200Done'
         default:
-          description: Details about an error that occurred during data processing
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/genericError'
+      tags:
+      - addCourse
+      x-openapi-router-controller: api.controllers.add
+
+    post:
+      summary: Add new course via a request body
+      description: Add a new training course to the database using POST-method
+      operationId: add_post
+      requestBody:
+        description: A set of data describing the training course
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        "200":
+          $ref: '#/components/responses/200Done'
+        default:
+          $ref: '#/components/responses/genericError'
       tags:
       - addCourse
       x-openapi-router-controller: api.controllers.add
@@ -113,23 +72,33 @@ paths:
 components:
   schemas:
     Course:
+      type: object
       properties:
         name:
           type: string
+          minLength: 2
+          description: Name of the course
         start:
           type: string
-          format: date-time
+          format: date
+          description: Start date of the course
         end:
           type: string
-          format: date-time
+          format: date
+          description: Graduation date of the course
         amount:
           type: integer
-          format: int32
+          format: int8
           minimum: 1
+          maximum: 255
+          exclusiveMinimum: False
+          exclusiveMaximum: False
+          description: Number of lectures that make up the training course
         id:
           type: integer
           format: int32
           default: -1
+          description: Course ID in the database
       required:
       - name
       - start
@@ -137,13 +106,97 @@ components:
       - amount
 
     Error:
+      type: object
       properties:
         code:
           type: integer
           format: int32
           minimum: 0
+          exclusiveMinimum: False
+          description: Error code
         message:
           type: string
+          description: Error message
       required:
       - code
       - message
+
+  parameters:
+    courseNameParam:
+      name: name
+      in: query
+      description: Name of the training course
+      required: true
+      allowEmptyValue: false
+      allowReserved: true
+      style: form
+      explode: false
+      schema:
+        type: string
+        minLength: 2
+      examples:
+        name:
+          value: "Technologies"
+    startDateParam:
+      name: start
+      in: query
+      description: Start date of the training course
+      required: true
+      allowEmptyValue: false
+      allowReserved: true
+      style: form
+      explode: false
+      schema:
+        type: string
+        format: date
+      examples:
+        start:
+          value: "2021-06-12"
+    endDateParam:
+      name: end
+      in: query
+      description: End date of the training course
+      required: true
+      allowEmptyValue: false
+      allowReserved: true
+      style: form
+      explode: false
+      schema:
+        type: string
+        format: date
+      examples:
+        end:
+          value: "2021-09-17"
+    amountParam:
+      name: amount
+      in: query
+      description: Number of lectures that make up the training course
+      required: true
+      allowEmptyValue: false
+      allowReserved: true
+      style: form
+      explode: false
+      schema:
+        type: integer
+        format: int8
+        minimum: 1
+        maximum: 255
+        exclusiveMinimum: False
+        exclusiveMaximum: False
+      examples:
+        amount:
+          value: 20
+
+  responses:
+    200Done:
+      description: Complete information about the added training course
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Course'
+    genericError:
+      description: Details about an error that occurred during data processing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
