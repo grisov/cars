@@ -27,6 +27,8 @@ servers:
 tags:
 - name: addCourse
   description: Add a new training course to the database
+- name: viewAll
+  description: Get a list of all training courses available in the database
 
 paths:
   /add:
@@ -107,3 +109,41 @@ paths:
       tags:
       - addCourse
       x-openapi-router-controller: api.controllers.add
+
+components:
+  schemas:
+    Course:
+      properties:
+        name:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        amount:
+          type: integer
+          format: int32
+          minimum: 1
+        id:
+          type: integer
+          format: int32
+          default: -1
+      required:
+      - name
+      - start
+      - end
+      - amount
+
+    Error:
+      properties:
+        code:
+          type: integer
+          format: int32
+          minimum: 0
+        message:
+          type: string
+      required:
+      - code
+      - message
