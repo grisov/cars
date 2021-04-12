@@ -24,3 +24,86 @@ servers:
     version:
       default: v1
       description: First release of REST API
+tags:
+- name: addCourse
+  description: Add a new training course to the database
+
+paths:
+  /add:
+    get:
+      summary: Add new course via a URL parameter
+      description: Add a new training course to the database using GET-method
+      operationId: add_get
+      parameters:
+      - in: query
+        name: name
+        description: Name of the training course
+        required: true
+        allowEmptyValue: false
+        allowReserved: true
+        style: form
+        explode: false
+        schema:
+          type: string
+        examples:
+          name:
+            value: Technologies
+      - in: query
+        name: start
+        description: Start date of the training course
+        required: true
+        allowEmptyValue: false
+        allowReserved: true
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        examples:
+          start:
+            value: 2021.06.12
+      - in: query
+        name: end
+        description: End date of the training course
+        required: true
+        allowEmptyValue: false
+        allowReserved: true
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        examples:
+          end:
+            value: 2021.09.17
+      - in: query
+        name: amount
+        description: Number of lectures that make up the training course
+        required: true
+        allowEmptyValue: false
+        allowReserved: true
+        style: form
+        explode: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+        examples:
+          amount:
+            value: 20
+      responses:
+        "200":
+          description: Complete information about the added training course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        default:
+          description: Details about an error that occurred during data processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+      - addCourse
+      x-openapi-router-controller: api.controllers.add
