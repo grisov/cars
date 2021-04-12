@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: Catalog of Courses
+  description: Simple REST API - test task for Yalantis Python School
+  contact:
+    name: Oleksandr Gryshchenko
+    email: grisov.dev@mailnull.com
+    url: https://bit.ly/39LSq74
+  license:
+    name: General Public License version 2.0
+    url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  termsOfService: https://github.com/grisov/catalog_of_courses
+  version: 1.0.0
+servers:
+- description: Production server
+  url: https://localhost:{port}/api/{version}
+  variables:
+    port:
+      default: "80"
+      description: Production server port
+      enum:
+      - "80"
+      - "8080"
+    version:
+      default: v1
+      description: First release of REST API
