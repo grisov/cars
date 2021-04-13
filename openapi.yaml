@@ -25,10 +25,12 @@ servers:
       default: v1
       description: First release of REST API
 tags:
-- name: addCourse
+- name: add
   description: Add a new training course to the database
-- name: allCourses
-  description: Get a list of all training courses available in the database
+- name: search
+  description: Get a list of all training courses that meet the specified parameters
+- name: general
+  description: General operations on one course (get detailed information, change, delete)
 
 paths:
   /add:
@@ -38,16 +40,20 @@ paths:
       operationId: add_get
       parameters:
       - $ref: '#/components/parameters/courseNameParam'
+        required: true
       - $ref: '#/components/parameters/startDateParam'
+        required: true
       - $ref: '#/components/parameters/endDateParam'
+        required: true
       - $ref: '#/components/parameters/amountParam'
+        required: true
       responses:
         "200":
-          $ref: '#/components/responses/200Done'
+          $ref: '#/components/responses/successCourse'
         default:
-          $ref: '#/components/responses/genericError'
+          $ref: '#/components/responses/unexpectedError'
       tags:
-      - addCourse
+      - add
       x-openapi-router-controller: api.controllers.add
 
     post:
@@ -56,55 +62,171 @@ paths:
       operationId: add_post
       requestBody:
         description: A set of data describing the training course
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Course'
       responses:
         "200":
-          $ref: '#/components/responses/200Done'
+          $ref: '#/components/responses/successCourse'
         default:
-          $ref: '#/components/responses/genericError'
+          $ref: '#/components/responses/unexpectedError'
       tags:
-      - addCourse
+      - add
       x-openapi-router-controller: api.controllers.add
+
+  /search:
+    get:
+      summary: Searching of courses on the properties specified in URL
+      description: Search for a training course by name or filter the list by specified dates
+      operationId: search_get
+      parameters:
+      - $ref: '#/components/parameters/courseNameParam'
+        required: false
+      - $ref: '#/components/parameters/startDateParam'
+        required: false
+      - $ref: '#/components/parameters/endDateParam'
+        required: false
+      responses:
+        "200":
+          $ref: '#/components/responses/successList'
+        default:
+          $ref: '#/components/responses/unexpectedError'
+      tags:
+      - search
+      x-openapi-router-controller: api.controllers.search
+
+    post:
+      summary: Searching of courses on the properties specified in request body
+      description: Search for a training course by name or filter the list by specified dates
+      operationId: search_post
+      requestBody:
+        description: Course name to search for or dates to filter the results
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchData'
+      responses:
+        "200":
+          $ref: '#/components/responses/successList'
+        default:
+          $ref: '#/components/responses/unexpectedError'
+      tags:
+      - search
+      x-openapi-router-controller: api.controllers.search
+
+  /course/{id}:
+    parameters:
+    - name: id
+      in: path
+      description: The ID of the Training course in the database
+      required: true
+      schema:
+        $ref: '#/components/schemas/CourseID'
+      examples:
+        id:
+          value: 17
+
+    get:
+      summary: Detailed information about the training course
+      description: Complete information about the training course with the specified ID
+      operationId: get_details
+      responses:
+        "200":
+          $ref: '#/components/responses/successCourse'
+        default:
+          $ref: '#/components/responses/unexpectedError'
+      tags:
+      - general
+      x-openapi-router-controller: api.controllers.general
+
+    put:
+      summary: Update a course with the specified ID
+      description: Change the properties of the training course in the database
+      operationId: update
+      requestBody:
+        description: A set of data describing the training course
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        "200":
+          $ref: '#/components/responses/successCourse'
+        default:
+          $ref: '#/components/responses/unexpectedError'
+      tags:
+      - general
+      x-openapi-router-controller: api.controllers.general
+
+    delete:
+      summary: Delete a course with the specified ID
+      description: Delete a training course from the database
+      operationId: remove
+      responses:
+        "200":
+          $ref: '#/components/responses/successCourse'
+        default:
+          $ref: '#/components/responses/unexpectedError'
+      tags:
+      - general
+      x-openapi-router-controller: api.controllers.general
 
 components:
   schemas:
+    CourseName:
+      type: string
+      minLength: 2
+      description: Name of the course
+    CourseStart:
+      type: string
+      format: date
+      description: Start date of the course
+    CourseEnd:
+      type: string
+      format: date
+      description: Graduation date of the course
+    CourseAmount:
+      type: integer
+      format: int8
+      minimum: 1
+      maximum: 255
+      exclusiveMinimum: False
+      exclusiveMaximum: False
+      description: Number of lectures that make up the training course
+    CourseID:
+      type: integer
+      format: int32
+      default: -1
+      description: Course ID in the database, value -1 if there is no corresponding record in the DB
     Course:
       type: object
       properties:
         name:
-          type: string
-          minLength: 2
-          description: Name of the course
+          $ref: '#/components/schemas/CourseName'
         start:
-          type: string
-          format: date
-          description: Start date of the course
+          $ref: '#/components/schemas/CourseStart'
         end:
-          type: string
-          format: date
-          description: Graduation date of the course
+          $ref: '#/components/schemas/CourseEnd'
         amount:
-          type: integer
-          format: int8
-          minimum: 1
-          maximum: 255
-          exclusiveMinimum: False
-          exclusiveMaximum: False
-          description: Number of lectures that make up the training course
+          $ref: '#/components/schemas/CourseAmount'
         id:
-          type: integer
-          format: int32
-          default: -1
-          description: Course ID in the database
+          $ref: '#/components/schemas/CourseID'
       required:
       - name
       - start
       - end
       - amount
-
+    SearchData:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/CourseName'
+        start:
+          $ref: '#/components/schemas/CourseStart'
+        end:
+          $ref: '#/components/schemas/CourseEnd'
     Error:
       type: object
       properties:
@@ -126,14 +248,12 @@ components:
       name: name
       in: query
       description: Name of the training course
-      required: true
       allowEmptyValue: false
       allowReserved: true
       style: form
       explode: false
       schema:
-        type: string
-        minLength: 2
+        $ref: '#/components/schemas/CourseName'
       examples:
         name:
           value: "Technologies"
@@ -141,14 +261,12 @@ components:
       name: start
       in: query
       description: Start date of the training course
-      required: true
       allowEmptyValue: false
       allowReserved: true
       style: form
       explode: false
       schema:
-        type: string
-        format: date
+        $ref: '#/components/schemas/CourseStart'
       examples:
         start:
           value: "2021-06-12"
@@ -156,14 +274,12 @@ components:
       name: end
       in: query
       description: End date of the training course
-      required: true
       allowEmptyValue: false
       allowReserved: true
       style: form
       explode: false
       schema:
-        type: string
-        format: date
+        $ref: '#/components/schemas/CourseEnd'
       examples:
         end:
           value: "2021-09-17"
@@ -171,31 +287,33 @@ components:
       name: amount
       in: query
       description: Number of lectures that make up the training course
-      required: true
       allowEmptyValue: false
       allowReserved: true
       style: form
       explode: false
       schema:
-        type: integer
-        format: int8
-        minimum: 1
-        maximum: 255
-        exclusiveMinimum: False
-        exclusiveMaximum: False
+        $ref: '#/components/schemas/CourseAmount'
       examples:
         amount:
           value: 20
 
   responses:
-    200Done:
-      description: Complete information about the added training course
+    successCourse:
+      description: Complete information about the training course
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Course'
-    genericError:
-      description: Details about an error that occurred during data processing
+    successList:
+      description: List of courses with complete information about each of them
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Course'
+    unexpectedError:
+      description: Details about an unexpected error that occurred during data processing
       content:
         application/json:
           schema:
