@@ -10,36 +10,36 @@ class GenericType(object):
         :param data_type: any data type
         :type data_type: Type
         """
-        self._type = data_type
+        self._value = data_type
 
     @property
-    def type(self) -> Type:
+    def value(self) -> Type:
         """Get the original type.
         :return: the original type
         :rtype: Type
         """
-        return self._type
+        return self._value
 
     def is_generic(self) -> bool:
         """ Determine whether input data type is a generic type.
         :return: an indication of whether the data type is generic
         :rtype: bool
         """
-        return hasattr(self.type, '__origin__')
+        return hasattr(self.value, '__origin__')
 
     def is_dict(self) -> bool:
         """ Determine whether generic type is a Dict.
         :return: an indication of whether the data type is generic Dict
         :rtype: bool
         """
-        return getattr(self.type, '__origin__', None) == dict
+        return getattr(self.value, '__origin__', None) == dict
 
     def is_list(self) -> bool:
         """ Determine whether generic type is a List.
         :return: an indication of whether the data type is generic List
         :rtype: bool
         """
-        return getattr(self.type, '__origin__', None) == list
+        return getattr(self.value, '__origin__', None) == list
 
 
 class Data(object):
@@ -73,7 +73,7 @@ class Data(object):
         except UnicodeEncodeError:
             import six
             value = six.u(self.value)
-        except TypeError:
+        except (TypeError, ValueError):
             value = self.value
         return value
 
@@ -91,7 +91,7 @@ class Data(object):
         :rtype: Union[date, str]
         """
         try:
-            return datetime.datetime.strptime(self.value, "%Y-%m-%d")
+            return datetime.strptime(self.value, "%Y-%m-%d")
         except (ValueError, TypeError):
             return self.value
 
@@ -103,7 +103,7 @@ class Data(object):
         :rtype: Union[datetime, str]
         """
         try:
-            return datetime.datetime.strptime(self.value, "%Y-%m-%dT%H:%M:%S")
+            return datetime.strptime(self.value, "%Y-%m-%dT%H:%M:%S")
         except (ValueError, TypeError):
             return self.value
 
@@ -122,7 +122,7 @@ class Data(object):
             return self.deserialize_object()
         elif target == date:
             return self.deserialize_date()
-        elif target == datetime.datetime:
+        elif target == datetime:
             return self.deserialize_datetime()
         elif GenericType(target).is_generic():
             if GenericType(target).is_list():
