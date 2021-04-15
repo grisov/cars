@@ -30,7 +30,7 @@ tags:
 - name: search
   description: Get a list of all training courses that meet the specified parameters
 - name: general
-  description: General operations on one course (get detailed information, change, delete)
+  description: General operations on one course (get data, change, delete)
 
 paths:
   /add:
@@ -230,18 +230,22 @@ components:
     Error:
       type: object
       properties:
-        code:
+        status:
           type: integer
           format: int32
-          minimum: 0
-          exclusiveMinimum: False
           description: Error code
-        message:
+        title:
           type: string
-          description: Error message
+          description: Common title of the error
+        detail:
+          type: string
+          description: Detailed description of the error
+        type:
+          type: string
+          description: Error type
       required:
-      - code
-      - message
+      - status
+      - title
 
   parameters:
     courseNameParam:
@@ -313,7 +317,7 @@ components:
             items:
               $ref: '#/components/schemas/Course'
     unexpectedError:
-      description: Details about an unexpected error that occurred during data processing
+      description: Details about an error that occurred during data processing
       content:
         application/json:
           schema:
