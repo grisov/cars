@@ -1,5 +1,5 @@
 from typing import Dict
-from api import utils
+from api.utils import Data
 
 
 class Model(object):
@@ -14,7 +14,7 @@ class Model(object):
     @classmethod
     def from_dict(cls, dikt: Dict):
         """Returns the dict as a model."""
-        return utils.deserialize_model(dikt, cls)
+        return Data(dikt).deserialize_model(cls)
 
     def to_dict(self) -> Dict:
         """Returns the model properties as a dict.

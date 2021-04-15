@@ -3,7 +3,7 @@
 import connexion
 from connexion.apps.flask_app import FlaskJSONEncoder
 from typing import Dict
-from api.models.base_model_ import Model
+from api.models.base_model import Model
 
 
 class JSONEncoder(FlaskJSONEncoder):

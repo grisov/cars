@@ -1,12 +1,8 @@
-# coding: utf-8
-
 from __future__ import absolute_import
-from datetime import date, datetime  # noqa: F401
-
-from typing import List, Dict  # noqa: F401
-
-from api.models.base_model_ import Model
-from api import util
+from datetime import date, datetime
+from typing import List, Dict
+from api.models.base_model import Model
+from api.utils import Data
 
 
 class SearchData(Model):
@@ -50,7 +46,7 @@ class SearchData(Model):
         :return: The SearchData of this SearchData.  # noqa: E501
         :rtype: SearchData
         """
-        return util.deserialize_model(dikt, cls)
+        return Data(dikt).deserialize_model(cls)
 
     @property
     def name(self):
