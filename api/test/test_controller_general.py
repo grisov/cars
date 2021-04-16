@@ -44,15 +44,14 @@ class TestGeneralController(BaseTestCase):
 
     @unittest.skip("Controller is under development")
     def test_update(self):
-        """Test case for update
-
-        Update a course with the specified ID
+        """Test case for update feature.
+        Update a course data with the specified ID.
         """
         course = {
   "amount" : 21,
   "name" : "name",
-  "start" : "2000-01-23",
-  "end" : "2000-01-23",
+  "start" : "2003-04-27",
+  "end" : "2005-01-03",
   "id" : 6
 }
         headers = { 

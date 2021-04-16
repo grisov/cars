@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Dict
 from api.utils import Data
 
@@ -13,11 +14,17 @@ class Model(object):
 
     @classmethod
     def from_dict(cls, dikt: Dict):
-        """Returns the dict as a model."""
+        """Returns the dict as a model.
+        :param dikt: the dict with the required attribute names and their values
+        :type dikt: Dict
+        :return: the object inherited from Model
+        :rtype: Model
+        """
         return Data(dikt).deserialize_model(cls)
 
     def to_dict(self) -> Dict:
         """Returns the model properties as a dict.
+        :return: presentation of the data model in the dict form
         :rtype: Dict
         """
         result = {}
@@ -42,18 +49,32 @@ class Model(object):
 
     def to_str(self) -> str:
         """Returns the string representation of the model.
+        :return: the string representation
         :rtype: str
         """
         return str(self.to_dict())
 
     def __repr__(self) -> str:
-        """For `print` and `pprint`."""
+        """Represent a model object as a string.
+        :return: the string representation
+        :rtype: str
+        """
         return self.to_str()
 
-    def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal."""
+    def __eq__(self, other: Model) -> bool:
+        """Returns true if both objects are equal.
+        :param other: another Model object
+        :type other: Model
+        :return: the result of comparing objects for equality
+        :rtype: bool
+        """
         return self.__dict__ == other.__dict__
 
-    def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal."""
+    def __ne__(self, other: Model) -> bool:
+        """Returns true if both objects are not equal.
+        :param other: another Model object
+        :type other: Model
+        :return: the result of comparing objects for inequality
+        :rtype: bool
+        """
         return not self == other

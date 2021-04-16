@@ -1,5 +1,23 @@
-from typing import Any, Dict, List, Union, Optional, Type
+from connexion.apps.flask_app import FlaskJSONEncoder
 from datetime import date, datetime
+from typing import Any, Dict, List, Union, Optional, Type
+
+
+class JSONEncoder(FlaskJSONEncoder):
+    include_nulls = False
+
+    def default(self, o) -> Dict:
+        from api.models.base_model import Model
+        if isinstance(o, Model):
+            dikt = {}
+            for attr in o.openapi_types:
+                value = getattr(o, attr)
+                if value is None and not self.include_nulls:
+                    continue
+                attr = o.attribute_map[attr]
+                dikt[attr] = value
+            return dikt
+        return FlaskJSONEncoder.default(self, o)
 
 
 class GenericType(object):
