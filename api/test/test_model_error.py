@@ -176,6 +176,17 @@ class TestErrorModel(unittest.TestCase):
         self.assertTrue(error1.__ne__(error2))
         self.assertTrue(error2.__ne__(error1))
 
+    def test_none_values(self):
+        """Testing the data model with None values."""
+        error = Error(
+            status=503,
+            title="Service Unavailable"
+        )
+        self.assertIsNotNone(error.status)
+        self.assertIsNotNone(error.title)
+        self.assertIsNone(error.detail)
+        self.assertIsNone(error.type)
+
 
 if __name__ == '__main__':
     unittest.main()
