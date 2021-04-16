@@ -1,14 +1,10 @@
-# coding: utf-8
-
 from __future__ import absolute_import
 import unittest
-
 from flask import json
 from six import BytesIO
-
-from api.models.course import Course  # noqa: E501
-from api.models.error import Error  # noqa: E501
-from api.models.search_data import SearchData  # noqa: E501
+from api.models.course import Course
+from api.models.error import Error
+from api.models.search_data import SearchData
 from api.test import BaseTestCase
 
 

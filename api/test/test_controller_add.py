@@ -1,11 +1,7 @@
-# coding: utf-8
-
 from __future__ import absolute_import
 import unittest
-
 from flask import json
 from six import BytesIO
-
 from api.models.course import Course
 from api.models.error import Error
 from api.test import BaseTestCase

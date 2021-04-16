@@ -1,19 +1,16 @@
-# coding: utf-8
-
 from __future__ import absolute_import
 import unittest
-
 from flask import json
 from six import BytesIO
-
-from api.models.course import Course  # noqa: E501
-from api.models.error import Error  # noqa: E501
+from api.models.course import Course
+from api.models.error import Error
 from api.test import BaseTestCase
 
 
 class TestGeneralController(BaseTestCase):
     """GeneralController integration test stubs"""
 
+    @unittest.skip("Controller is under development")
     def test_get_details(self):
         """Test case for get_details
 
@@ -23,12 +20,13 @@ class TestGeneralController(BaseTestCase):
             'Accept': 'application/json',
         }
         response = self.client.open(
-            '/api/v1/course/{id}'.format(id=-1),
+            '/api/v1/course/{id}'.format(id=1),
             method='GET',
             headers=headers)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    @unittest.skip("Controller is under development")
     def test_remove(self):
         """Test case for remove
 
@@ -38,12 +36,13 @@ class TestGeneralController(BaseTestCase):
             'Accept': 'application/json',
         }
         response = self.client.open(
-            '/api/v1/course/{id}'.format(id=-1),
+            '/api/v1/course/{id}'.format(id=1),
             method='DELETE',
             headers=headers)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    @unittest.skip("Controller is under development")
     def test_update(self):
         """Test case for update
 
@@ -61,7 +60,7 @@ class TestGeneralController(BaseTestCase):
             'Content-Type': 'application/json',
         }
         response = self.client.open(
-            '/api/v1/course/{id}'.format(id=-1),
+            '/api/v1/course/{id}'.format(id=1),
             method='PUT',
             headers=headers,
             data=json.dumps(course),

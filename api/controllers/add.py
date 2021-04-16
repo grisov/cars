@@ -22,7 +22,7 @@ def add_get(name=None, start=None, end=None, amount=None):
     return 'do some magic!'
 
 
-def add_post(course):
+def add_post(course=None):
     """Add new course via a request body.
     Add a new training course to the database using POST-method.
     :param course: A set of data describing the training course
