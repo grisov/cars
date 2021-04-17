@@ -5,12 +5,13 @@ from api.models.base_model import Model
 class Error(Model):
     """Representation of the data structure for the error."""
 
-    def __init__(self,
-        status: Optional[int]=None,
-        title: Optional[str]=None,
-        detail: Optional[str]=None,
-        type: Optional[str]=None
-    ) -> None:
+    def __init__(
+            self,
+            status: Optional[int]=None,
+            title: Optional[str]=None,
+            detail: Optional[str]=None,
+            type: Optional[str]=None
+        ) -> None:
         """Error model defined in OpenAPI specification.
         :param status: The status code of this error
         :type status: Optional[int]
