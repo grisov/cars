@@ -1,7 +1,6 @@
 from datetime import date
 from typing import Dict, List, Optional, Union
 from api.models.base_model import Model
-from api.utils import Data
 
 
 class Course(Model):
@@ -9,19 +8,19 @@ class Course(Model):
 
     def __init__(
             self,
-            name: str,
-            start: Union[date, str],
-            end: Union[date, str],
-            amount: int,
+            name: str='',
+            start: Union[date, str, None]=None,
+            end: Union[date, str, None]=None,
+            amount: int=0,
             id: Optional[int]=-1
         ) -> None:
         """Data model representing the training course.
-        :param name: The name of the course
-        :type name: str
+        :param n	ame: The name of the course
+        	:type name: str	
         :param start: the start date of the course
-        :type start: Union[date, str]
+        :type start: Union[date, str, None]
         :param end: the graduation date of the course
-        :type end: Union[date, str]
+        :type end: Union[date, str, None]
         :param amount: the number of lectures that make up the course
         :type amount: int
         :param id: the index of the course in the database
@@ -68,10 +67,10 @@ class Course(Model):
         self._name = name
 
     @property
-    def start(self) -> Union[date, str]:
+    def start(self) -> Union[date, str, None]:
         """Get the start date of the course.
         :return: The start date of the course.
-        :rtype: Union[date, str]
+        :rtype: Union[date, str, None]
         """
         return self._start
 
@@ -86,10 +85,10 @@ class Course(Model):
         self._start = start
 
     @property
-    def end(self) -> Union[date, str]:
+    def end(self) -> Union[date, str, None]:
         """Get the graduation date of the course.
         :return: The graduation date of the course
-        :rtype: Union[date, str]
+        :rtype: Union[date, str, None]
         """
         return self._end
 

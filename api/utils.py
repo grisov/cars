@@ -109,7 +109,7 @@ class Data(object):
         :rtype: Union[date, str]
         """
         try:
-            return datetime.strptime(self.value, "%Y-%m-%d")
+            return datetime.strptime(self.value, "%Y-%m-%d").date()
         except (ValueError, TypeError):
             return self.value
 
@@ -150,12 +150,12 @@ class Data(object):
         else:
             return self.deserialize_model(target)
 
-    def deserialize_model(self, target: Union[Dict, List]) -> object:
-        """Deserialize list or dict to model.
+    def deserialize_model(self, target: object) -> Union[Dict, List]:
+        """Deserialize data model to list or dict.
         :param target: the target data model object
-        :type target: Union[Dict, List]
-        :return: the data model object
-        :rtype: api.models.base_model.Model
+        :type target: api.models.base_model.Model
+        :return: deserialized data model
+        :rtype: Union[Dict, List]
         """
         instance = target()
         if not instance.openapi_types:
