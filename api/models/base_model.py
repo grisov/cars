@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Dict
+from datetime import date
+from typing import Dict, Union, Optional
 from api.utils import Data
 
 
@@ -78,3 +79,51 @@ class Model(object):
         :rtype: bool
         """
         return not self == other
+
+    @staticmethod
+    def validate_name(name: Optional[str]) -> Optional[str]:
+        """Validation of the passed value for the course name.
+        :param name: the name of the training course
+        :type name: Optional[str]
+        :return: the validated value of the course name
+        :rtype: Optional[name]
+        """
+        if name is not None and type(name) != str:
+            raise TypeError("Invalid value type for `name`, type must be `str`")
+        elif name is not None and len(name) < 2:
+            raise ValueError("Invalid value for `name`, length must be greater than or equal to `2`")
+        return name
+
+    @staticmethod
+    def validate_date(dt: Union[date, str, None]) -> Optional[date]:
+        """Validation of the passed value for the date.
+        :param dt: the date
+        :type dt: Union[date, str, None]
+        :return: the validated value of the date
+        :rtype: Optional[date]
+        """
+        if dt is not None and isinstance(dt, str):
+            dt = Data(dt).deserialize(date)
+            if type(dt) != date:
+                raise ValueError("The date must be in ISO format like `2021-04-28`")
+        if dt is not None and type(dt) != date:
+            raise TypeError("Invalid value type, it must be `date` or `str`")
+        return dt
+
+    @staticmethod
+    def validate_amount(amount: Optional[int]) -> Optional[int]:
+        """Validation of the passed value for the course amount.
+        :param amount: the number of lectures that make up the course
+        :type amount: Optional[int]
+        :return: the validated value of the course amount
+        :rtype: Optional[int]
+        """
+        if amount is not None and type(amount) != int:
+            amount = Data(amount).deserialize(int)
+            if type(amount) != int:
+                raise TypeError("Invalid value type for `amount`, it must be `int`")
+        if amount is not None and amount < 1:
+            raise ValueError("Invalid value for `amount`, must be a value greater than or equal to `1`")
+        elif amount is not None and amount > 255:
+            raise ValueError("Invalid value for `amount`, must be a value less than or equal to `255`")
+        return amount

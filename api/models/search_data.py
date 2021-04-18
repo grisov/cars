@@ -30,9 +30,9 @@ class SearchData(Model):
             'start': 'start',
             'end': 'end'
         }
-        self._name = name
-        self._start = start
-        self._end = end
+        self.name = name
+        self.start = start
+        self.end = end
 
     @property
     def name(self) -> Optional[str]:
@@ -48,15 +48,13 @@ class SearchData(Model):
         :param name: the name of the course for searching
         :type name: Optional[str]
         """
-        if name is not None and len(name) < 2:
-            raise ValueError("Invalid value for `name`, length must be greater than or equal to `2`")
-        self._name = name
+        self._name = self.validate_name(name)
 
     @property
-    def start(self) -> Union[date, str, None]:
+    def start(self) -> Optional[date]:
         """Get the start date of the course for searching.
         :return: the start date of the course for searching
-        :rtype: Union[date, str, None]
+        :rtype: Optional[date]
         """
         return self._start
 
@@ -66,7 +64,7 @@ class SearchData(Model):
         :param start: the start date of the course for searching
         :type start: Union[date, str, None]
         """
-        self._start = start
+        self._start = self.validate_date(start)
 
     @property
     def end(self) -> Union[date, str, None]:

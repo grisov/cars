@@ -75,6 +75,7 @@ class TestDataClass(unittest.TestCase):
         self.assertEqual(dt.year, 2037)
         self.assertEqual(dt.month, 7)
         self.assertEqual(dt.day, 1)
+        self.assertEqual(dt.isoformat(), "2037-07-01")
 
     def test_deserialize_date_noniso(self):
         dt = Data("17.03.2019").deserialize_date()
