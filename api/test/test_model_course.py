@@ -19,16 +19,16 @@ class TestCourseModel(unittest.TestCase):
         self.assertIsInstance(course.name, str)
         self.assertEqual(course.name, "Technology")
 
-        self.assertIsInstance(course.start, str)
-        self.assertEqual(course.start, "2021-04-28")
+        self.assertIsInstance(course.start, date)
+        self.assertEqual(course.start.isoformat(), "2021-04-28")
         course.start = Data("2021-04-28").deserialize(date)
         self.assertIsInstance(course.start, date)
         self.assertEqual(course.start.year, 2021)
         self.assertEqual(course.start.month, 4)
         self.assertEqual(course.start.day, 28)
 
-        self.assertIsInstance(course.end, str)
-        self.assertEqual(course.end, "2021-05-15")
+        self.assertIsInstance(course.end, date)
+        self.assertEqual(course.end.isoformat(), "2021-05-15")
         course.end = Data("2021-07-17").deserialize(date)
         self.assertIsInstance(course.end, date)
         self.assertEqual(course.end.year, 2021)
@@ -108,7 +108,7 @@ class TestCourseModel(unittest.TestCase):
         """Testing declared attribute types."""
         course = Course(
             name="Python is awesome!",
-            start=Data("20029-09-29").deserialize(date),
+            start=Data("2029-09-29").deserialize(date),
             end=Data("2037-07-27").deserialize(date),
             amount=255
         )
@@ -130,7 +130,7 @@ class TestCourseModel(unittest.TestCase):
         """Testing declared attribute names."""
         course = Course(
             name="Python is awesome!",
-            start=Data("20029-09-29").deserialize(date),
+            start=Data("2029-09-29").deserialize(date),
             end=Data("2037-07-27").deserialize(date),
             amount=255
         )
@@ -241,10 +241,12 @@ class TestCourseModel(unittest.TestCase):
     def test_default_values(self):
         """Testing the data model with default null values."""
         course = Course()
-        self.assertEqual(course.name, '')
-        self.assertIsNone(course.start)
-        self.assertIsNone(course.end)
-        self.assertEqual(course.amount, 0)
+        self.assertEqual(course.name, '--')
+        self.assertIsNotNone(course.start)
+        self.assertEqual(course.start.isoformat(), "1970-01-01")
+        self.assertIsNotNone(course.end)
+        self.assertEqual(course.end.isoformat(), "1970-01-01")
+        self.assertEqual(course.amount, 1)
         self.assertEqual(course.id, -1)
 
 

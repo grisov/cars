@@ -83,7 +83,7 @@ class SearchData(Model):
         self._end = self.validate_date(end)
 
     def to_str(self) -> str:
-        """Returns the string representation of the search model.
+        """Return the string representation of the search model.
         :return: the string representation
         :rtype: str
         """

@@ -15,7 +15,7 @@ class Model(object):
 
     @classmethod
     def from_dict(cls, dikt: Dict):
-        """Returns the dict as a model.
+        """Return the dict as a model.
         :param dikt: the dict with the required attribute names and their values
         :type dikt: Dict
         :return: the object inherited from Model
@@ -24,7 +24,7 @@ class Model(object):
         return Data(dikt).deserialize_model(cls)
 
     def to_dict(self) -> Dict:
-        """Returns the model properties as a dict.
+        """Return the model properties as a dict.
         :return: presentation of the data model in the dict form
         :rtype: Dict
         """
@@ -49,7 +49,7 @@ class Model(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model.
+        """Return the string representation of the model.
         :return: the string representation
         :rtype: str
         """
@@ -63,7 +63,7 @@ class Model(object):
         return self.to_str()
 
     def __eq__(self, other: Model) -> bool:
-        """Returns true if both objects are equal.
+        """Return true if both objects are equal.
         :param other: another Model object
         :type other: Model
         :return: the result of comparing objects for equality
@@ -72,7 +72,7 @@ class Model(object):
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other: Model) -> bool:
-        """Returns true if both objects are not equal.
+        """Return true if both objects are not equal.
         :param other: another Model object
         :type other: Model
         :return: the result of comparing objects for inequality

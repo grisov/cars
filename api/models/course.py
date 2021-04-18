@@ -8,23 +8,23 @@ class Course(Model):
 
     def __init__(
             self,
-            name: str='',
-            start: Union[date, str, None]=None,
-            end: Union[date, str, None]=None,
-            amount: int=0,
-            id: Optional[int]=-1
+            name: str="--",
+            start: Union[date, str]="1970-01-01",
+            end: Union[date, str]="1970-01-01",
+            amount: int=1,
+            id: int=-1
         ) -> None:
         """Data model representing the training course.
         :param n	ame: The name of the course
         	:type name: str	
         :param start: the start date of the course
-        :type start: Union[date, str, None]
+        :type start: Union[date, str]
         :param end: the graduation date of the course
-        :type end: Union[date, str, None]
+        :type end: Union[date, str]
         :param amount: the number of lectures that make up the course
         :type amount: int
         :param id: the index of the course in the database
-        :type id: Optional[int]
+        :type id: int
         """
         self.openapi_types = {
             'name': str,
@@ -40,11 +40,11 @@ class Course(Model):
             'amount': 'amount',
             'id': 'id'
         }
-        self._name = name
-        self._start = start
-        self._end = end
-        self._amount = amount
-        self._id = id
+        self.name = name
+        self.start = start
+        self.end = end
+        self.amount = amount
+        self.id = id
 
     @property
     def name(self) -> str:
@@ -62,15 +62,13 @@ class Course(Model):
         """
         if name is None:
             raise ValueError("Invalid value for `name`, must not be `None`")
-        elif len(name) < 2:
-            raise ValueError("Invalid value for `name`, length must be greater than or equal to `2`")
-        self._name = name
+        self._name = self.validate_name(name)
 
     @property
-    def start(self) -> Union[date, str, None]:
+    def start(self) -> date:
         """Get the start date of the course.
         :return: The start date of the course.
-        :rtype: Union[date, str, None]
+        :rtype: date
         """
         return self._start
 
@@ -82,13 +80,13 @@ class Course(Model):
         """
         if start is None:
             raise ValueError("Invalid value for `start`, must not be `None`")
-        self._start = start
+        self._start = self.validate_date(start)
 
     @property
-    def end(self) -> Union[date, str, None]:
+    def end(self) -> date:
         """Get the graduation date of the course.
         :return: The graduation date of the course
-        :rtype: Union[date, str, None]
+        :rtype: date
         """
         return self._end
 
@@ -100,7 +98,7 @@ class Course(Model):
         """
         if end is None:
             raise ValueError("Invalid value for `end`, must not be `None`")
-        self._end = end
+        self._end = self.validate_date(end)
 
     @property
     def amount(self) -> int:
@@ -118,11 +116,7 @@ class Course(Model):
         """
         if amount is None:
             raise ValueError("Invalid value for `amount`, must not be `None`")
-        elif amount > 255:
-            raise ValueError("Invalid value for `amount`, must be a value less than or equal to `255`")
-        elif amount < 1:
-            raise ValueError("Invalid value for `amount`, must be a value greater than or equal to `1`")
-        self._amount = amount
+        self._amount = self.validate_amount(amount)
 
     @property
     def id(self) -> int:
@@ -134,9 +128,21 @@ class Course(Model):
         return self._id
 
     @id.setter
-    def id(self, id: Optional[int]) -> None:
+    def id(self, id: int) -> None:
         """Set the id of the training course.
         :param id: The ID of the course in the DB
-        :type id: Optional[int]
+        :type id: int
         """
         self._id = id
+
+    def to_str(self) -> str:
+        """Return the string representation of the search model.
+        :return: the string representation
+        :rtype: str
+        """
+        data: Dict = dict(self.to_dict())
+        if data.get('start'):
+            data['start'] = str(data['start'])
+        if data.get('end'):
+            data['end'] = str(data['end'])
+        return str(data)
