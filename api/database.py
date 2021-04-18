@@ -1,6 +1,8 @@
 import os.path
 import sqlite3
-from typing import Optional
+from typing import List, Optional
+from api.models.course import Course
+from api.models.search_data import SearchData
 
 
 class Database(object):
@@ -26,3 +28,91 @@ class Database(object):
             )
         except sqlite3.Error as e:
             pass
+
+    def get(self, id: int) -> Optional[Course]:
+        """Get course information by ID in database.
+        :param id: the ID of the training course in the database
+        :type id: int
+        :return: the detailed information about training course
+        :rtype: Optional[Course]
+        """
+        if id is None or id<0:
+            return None
+        query = "SELECT * FROM courses WHERE id=?"
+        try:
+            self._cur.execute(query, (id,))
+            record = self._cur.fetchone()
+        except sqlite3.Error as e:
+            pass
+        if record:
+            return Course(
+                name=record[1],
+                start=record[2],
+                end=record[3],
+                amount=record[4],
+                id=record[0]
+            )
+        return None
+
+    def add(self, course: Optional[Course]) -> Optional[Course]:
+        """Add a training course to the database.
+        :param course: the detailed information about training course
+        :type course: Optional[Course]
+        :return: the course with real ID if it was added successfully
+        :rtype: Optional[Course]
+        """
+        if course is None:
+            return None
+        query = "INSERT INTO courses (name, start, end, amount) VALUES (?,?,?,?)"
+        try:
+            self._cur.execute(query, (course.name, course.start.isoformat(), course.end.isoformat(), course.amount))
+            course.id = self._cur.lastrowid or -1
+            self._conn.commit()
+        except sqlite3.Error as e:
+            return None
+        return course
+
+    def remove(self, id: int) -> Optional[Course]:
+        """Delete a course by ID in the database.
+        :param id: the ID of the training course
+        :type id: int
+        :return: the deleted training course object
+        :rtype: Optional[Course]
+        """
+        if id <= 0:
+            return None
+        query = "DELETE FROM courses WHERE id=?"
+        course = self.get(id)
+        try:
+            self._cur.execute(query, (id,))
+            self._conn.commit()
+        except sqlite3.Error as e:
+            return None
+        return course
+
+    def update(self, id: int, course: Optional[Course]) -> Optional[Course]:
+        """Update the course details stored by the specified ID.
+        :param id: the ID of the training course in the database
+        :type id: int
+        :param course: new course data to update in the database
+        :type course: Optional[Course]
+        :return: the updated course information
+        :rtype: Optional[Course]
+        """
+        if id is None or id <= 0 or course is None:
+            return None
+
+    def search(self, data: Optional[SearchData]) -> List[Course]:
+        """Search for courses that match the query data.
+        :param data: the search query data
+        :type data: Optional[SearchData]
+        :return: the list of courses that match the search query
+        :rtype: List[Course]
+        """
+        if data is None:
+            return []
+
+    def close(self) -> None:
+            self._cur.close()
+            if self._conn:
+                self._conn.close()
