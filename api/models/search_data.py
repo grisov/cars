@@ -80,4 +80,16 @@ class SearchData(Model):
         :param end: the graduation date of the course for searching
         :type end: Union[date, str, None]
         """
-        self._end = end
+        self._end = self.validate_date(end)
+
+    def to_str(self) -> str:
+        """Returns the string representation of the search model.
+        :return: the string representation
+        :rtype: str
+        """
+        data: Dict = dict(self.to_dict())
+        if data.get('start'):
+            data['start'] = str(data['start'])
+        if data.get('end'):
+            data['end'] = str(data['end'])
+        return str(data)
