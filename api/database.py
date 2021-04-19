@@ -8,14 +8,20 @@ from api.models.search_data import SearchData
 class Database(object):
     """Object-Relational Mapping class for working with SQLite3."""
 
-    def __init__(self, file: str="courses.sqlite3") -> None:
+    def __init__(
+            self,
+            file: str=os.path.join(os.path.dirname(__file__), "courses.sqlite3")
+        ) -> None:
         """Create a database connection to the SQLite database.
-        :param file: the SQLite database file name
+        :param file: the SQLite database file path
         :type file: str
         """
-        file = os.path.join(os.path.dirname(__file__), file)
         self._conn = sqlite3.connect(file)
         self._cur = self._conn.cursor()
+        self.create_table()
+
+    def create_table(self) -> None:
+        """Create new table in the database."""
         try:
             self._cur.execute(
                 """CREATE TABLE 'courses' (

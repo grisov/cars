@@ -171,6 +171,7 @@ class TestCourseModel(unittest.TestCase):
         self.assertEqual(info['end'], data['end'])
         self.assertEqual(info['amount'], 123)
         self.assertEqual(info['id'], 7)
+        self.assertEqual(info, data)
 
     def test_to_str(self):
         """Testing the method of converting the model to a string."""
