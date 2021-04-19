@@ -116,17 +116,19 @@ paths:
       - search
       x-openapi-router-controller: api.controllers.search
 
-  /course/{id}:
+  /course/{cid}:
     parameters:
-    - name: id
+    - name: cid
       in: path
-      description: The ID of the Training course in the database
       required: true
+      description: The ID of the Training course in the database
+      style: simple
+      explode: false
       schema:
         $ref: '#/components/schemas/CourseID'
       examples:
-        id:
-          value: 17
+        cid:
+          value: 7
 
     get:
       summary: Detailed information about the training course
