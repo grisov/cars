@@ -1,16 +1,19 @@
 import logging
 import connexion
 from flask_testing import TestCase
-from api.utils import JSONEncoder
 
 
 class BaseTestCase(TestCase):
     """Basic test case to check the controllers."""
 
-    def create_app(self):
-        """Create and return Flask application instance."""
-        logging.getLogger('connexion.operation').setLevel('ERROR')
-        app = connexion.App(__name__, specification_dir='../openapi/')
-        app.app.json_encoder = JSONEncoder
-        app.add_api('spec.yaml', pythonic_params=True)
-        return app.app
+    def create_app(self) -> connexion.FlaskApp:
+        """Create and return Flask application instance.
+        :return: the configured Flask app instance
+        :rtype: connexion.FlaskApp
+        """
+        logging.getLogger('__name__').setLevel('ERROR')
+        from api import app
+        app.config["DATABASE"] = ":memory:"
+        app.debug = True
+        app.testing = True
+        return app

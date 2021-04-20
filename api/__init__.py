@@ -7,7 +7,7 @@ def application() -> connexion.FlaskApp:
     :return: the configured instance of the Flask application
     :rtype: connexion.FlaskApp
     """
-    app = connexion.App(__name__, specification_dir='./openapi/')
+    app = connexion.App(__name__, specification_dir='openapi/')
     app.add_api('spec.yaml',
                 arguments={'title': 'Catalog of Courses'},
                 pythonic_params=True)

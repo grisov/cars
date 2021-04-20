@@ -1,4 +1,4 @@
-SERVER_NAME = "localhost:5000"
+# SERVER_NAME = "localhost:5000"
 DEBUG = False
 TESTING = False
 CSRF_ENABLED = True
