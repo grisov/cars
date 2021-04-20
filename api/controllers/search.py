@@ -1,34 +1,51 @@
 import connexion
-from typing import List
+from typing import List, Union, Optional
 from api.models.course import Course
 from api.models.error import Error
 from api.models.search_data import SearchData
-from api.utils import Data
+from api.database import Database
 
 
-def search_get(name=None, start=None, end=None):
+def search_get(
+        name: Optional[str]=None,
+        start: Optional[str]=None,
+        end: Optional[str]=None
+    ) -> Union[List[Course], Error]:
     """Searching of courses on the properties specified in URL.
     Search for a training course by name or filter the list by specified dates.
-    :param name: Name of the training course
-    :type name: str
-    :param start: Start date of the training course
-    :type start: str
-    :param end: End date of the training course
-    :type end: str
-    :rtype: List[Course]
+    :param name: part of the name of the training course
+    :type name: Optional[str]
+    :param start: Start date of the training courses
+    :type start: Optional[str]
+    :param end: End date of the training courses
+    :type end: Optional[str]
+    :return: the list of courses that meet the search criteria
+    :rtype: Union[List[Course], Error]
     """
-    start = Data(start).deserialize_date()
-    end = Data(end).deserialize_date()
-    return 'do some magic!'
+    query = SearchData(name, start, end)
+    db = Database()
+    result = db.search(query)
+    db.close()
+    return result
 
 
-def search_post(search_data=None):
+def search_post(search_data: Optional[SearchData]=None) -> Union[List[Course], Error]:
     """Searching of courses on the properties specified in request body.
     Search for a training course by name or filter the list by specified dates.
     :param search_data: Course name to search for or dates to filter the results
-    :type search_data: dict | bytes
-    :rtype: List[Course]
+    :type search_data: Optional[SearchData]
+    :return: the list of courses that meet the search criteria
+    :rtype: Union[List[Course], Error]
     """
     if connexion.request.is_json:
-        search_data = SearchData.from_dict(connexion.request.get_json())
-    return 'do some magic!'
+        query = SearchData.from_dict(connexion.request.get_json())
+        db = Database()
+        result = db.search(query)
+        db.close()
+        return result
+    return Error(
+            status=400,
+            title="Bad Request",
+            detail="Invalid data format transmitted.",
+            type="about:blank"
+        ), 400
