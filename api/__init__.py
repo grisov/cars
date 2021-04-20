@@ -20,3 +20,4 @@ def application() -> connexion.FlaskApp:
 
 
 app = application()
+from api.views import *
