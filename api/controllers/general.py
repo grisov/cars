@@ -54,4 +54,13 @@ def update(cid: int, course: Optional[Course]=None) -> Union[Course, Error]:
     """
     if connexion.request.is_json:
         course = Course.from_dict(connexion.request.get_json())
-    return 'do some magic!'
+        db = Database()
+        record = db.update(cid, course)
+        db.close()
+        return record
+    return Error(
+            status=400,
+            title="Bad Request",
+            detail="Invalid data format transmitted.",
+            type="about:blank"
+        ), 400
