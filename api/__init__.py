@@ -13,9 +13,9 @@ def application() -> connexion.FlaskApp:
                 pythonic_params=True)
     app.app.config.from_object('api.config')
     app.app.json_encoder = JSONEncoder
-    app.app.template_folder='templates'
-    app.app.static_folder='static'
-    app.app.static_url_path='/static'
+    app.app.template_folder=app.app.config["TEMPLATE_FOLDER"]
+    app.app.static_folder=app.app.config["STATIC_FOLDER"]
+    app.app.static_url_path=app.app.config["STATIC_URL_PATH"]
     return app.app
 
 

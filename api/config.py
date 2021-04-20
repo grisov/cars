@@ -1,4 +1,9 @@
 SERVER_NAME = "localhost:5000"
 DEBUG = False
+TESTING = False
 CSRF_ENABLED = True
 SECRET_KEY = "You_will_never_guess"
+STATIC_FOLDER = "static"
+TEMPLATE_FOLDER = "templates"
+STATIC_URL_PATH = "/static"
+DATABASE = "courses.sqlite3"

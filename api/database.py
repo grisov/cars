@@ -10,12 +10,15 @@ class Database(object):
 
     def __init__(
             self,
-            file: str=os.path.join(os.path.dirname(__file__), "courses.sqlite3")
+            file: str=''
         ) -> None:
         """Create a database connection to the SQLite database.
         :param file: the SQLite database file path
         :type file: str
         """
+        if file.strip() == '':
+            from api import app
+            file = app.config["DATABASE"]
         self._conn = sqlite3.connect(file)
         self._cur = self._conn.cursor()
         self.create_table()
