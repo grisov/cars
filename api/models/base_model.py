@@ -31,6 +31,8 @@ class Model(object):
         result = {}
         for attr in self.openapi_types:
             value = getattr(self, attr)
+            if value is None:
+                continue
             if isinstance(value, list):
                 result[attr] = list(map(
                     lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
