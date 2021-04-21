@@ -3,6 +3,7 @@ from werkzeug.exceptions import BadRequest
 from api.test import BaseTestCase
 from api.models.course import Course
 from api.models.error import Error
+from api.database import Database
 
 
 class TestGetController(BaseTestCase):
@@ -14,22 +15,15 @@ class TestGetController(BaseTestCase):
             "Accept": "application/json"
         }
         # Filling the database
-        headers = {
-            "Content-Type": "application/json"
-        }
-        headers.update(self.headers)
         courses = [
             Course("Level one", "2021-04-04", "2023-12-22", 37),
             Course("Level two", "2022-05-05", "2024-11-19", 25),
             Course("Level three", "2023-06-07", "2025-10-17", 19)
         ]
+        db = Database()
         for course in courses:
-            r = self.client.post(
-                "/api/v1/add",
-                headers = headers,
-                data=json.dumps(course.to_dict()),
-                content_type=headers["Content-Type"]
-            )
+            db.add(course)
+        db.close()
 
     def tearDown(self) -> None:
         """Performed after each test."""
