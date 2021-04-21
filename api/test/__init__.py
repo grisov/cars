@@ -1,6 +1,7 @@
 import logging
 import connexion
 from flask_testing import TestCase
+from datetime import datetime
 
 
 class BaseTestCase(TestCase):
@@ -11,9 +12,11 @@ class BaseTestCase(TestCase):
         :return: the configured Flask app instance
         :rtype: connexion.FlaskApp
         """
-        logging.getLogger('__name__').setLevel('ERROR')
+        logging.disable(logging.CRITICAL)
         from api import app
-        app.config["DATABASE"] = ":memory:"
+        # Create a unique shared in memory database for each test separately
+        unique = hash((self.id(), datetime.now().timestamp()))
+        app.config["DATABASE"] = "file:%d?mode=memory&cache=shared" % unique
         app.debug = True
         app.testing = True
         return app

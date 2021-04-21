@@ -97,6 +97,34 @@ class TestAddController(BaseTestCase):
         self.assertEqual(error.title, "Bad Request", "Error title")
         self.assertEqual(error.type, "about:blank", "Error type")
 
+    def test_wrong_post(self) -> None:
+        """Testing the process of adding wrong data via request body."""
+        self.headers["Content-Type"] = "application/json"
+        incomplete_data = {
+            'name': 'Incomplete course data',
+            'end': '2022-04-29',
+            'amount': 19
+        }
+        response = self.client.post(
+            "/api/v1/add",
+            headers = self.headers,
+            data=json.dumps(incomplete_data),
+            content_type=self.headers["Content-Type"]
+        )
+        self.assert400(response, "Status code")
+        self.assertTrue(response.is_json, "Content-Type")
+        self.assertIn("application/problem+json", response.content_type, "Content-Type")
+        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
+        self.assertEqual(response.charset, "utf-8", "Content charset")
+
+        with self.assertRaises(TypeError):
+            course = Course(**response.json)
+        error = Error(**response.json)
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
+        self.assertEqual(error.status, response.status_code, "Status code")
+        self.assertEqual(error.title, "Bad Request", "Error title")
+        self.assertEqual(error.type, "about:blank", "Error type")
+
     def test_put_method(self) -> None:
         """Testing the requests using PUT method."""
         self.headers["Content-Type"] = "application/json"
