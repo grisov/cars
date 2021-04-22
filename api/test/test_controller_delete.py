@@ -11,9 +11,7 @@ class TestDeleteController(BaseTestCase):
 
     def setUp(self) -> None:
         """Performed before each test."""
-        self.headers = {
-            "Accept": "application/json"
-        }
+        super(TestDeleteController, self).setUp()
         # Filling the database
         courses = [
             Course("Level one", "2021-04-04", "2023-12-22", 37),
@@ -24,10 +22,6 @@ class TestDeleteController(BaseTestCase):
         for course in courses:
             db.add(course)
         db.close()
-
-    def tearDown(self) -> None:
-        """Performed after each test."""
-        self.headers = {}
 
     def test_delete_existing(self) -> None:
         """Delete an existing record."""
@@ -77,20 +71,30 @@ class TestDeleteController(BaseTestCase):
             "/api/v1/course/",
             headers=self.headers
         )
-        self.assert404(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/problem+json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/problem+json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        self.assert404(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/problem+json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/problem+json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/problem+json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
-        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
-        self.assertEqual(error.status, response.status_code, "Status code")
-        self.assertEqual(error.title, "Not Found", "Error title")
-        self.assertEqual(error.type, "about:blank", "Error type")
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
+            f"The response attributes are `{str(list(response.json))}`")
+        self.assertEqual(error.status, 404,
+            f"The error status code is `{error.status}`")
+        self.assertEqual(error.title, "Not Found",
+            f"The error title is `{error.title}`")
+        self.assertEqual(error.type, "about:blank",
+            f"The error type is `{error.type}`")
 
     def test_delete_repeatedly(self) -> None:
         """Repeatedly delete record."""

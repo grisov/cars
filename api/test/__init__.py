@@ -1,7 +1,9 @@
+import os
 import logging
 import connexion
 from flask_testing import TestCase
 from datetime import datetime
+from tempfile import gettempdir
 
 
 class BaseTestCase(TestCase):
@@ -16,7 +18,24 @@ class BaseTestCase(TestCase):
         from api import app
         # Create a unique shared in memory database for each test separately
         unique = hash((self.id(), datetime.now().timestamp()))
-        app.config["DATABASE"] = "file:%d?mode=memory&cache=shared" % unique
+        self.dbfile = os.path.join(gettempdir(), str(unique))
+        app.config["DATABASE"] = self.dbfile
+        app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
         app.debug = True
         app.testing = True
         return app
+
+    def setUp(self) -> None:
+        """Performed before each test."""
+        self.headers = {
+            "Accept": "application/json"
+        }
+
+    def tearDown(self) -> None:
+        """Performed after each test."""
+        self.headers = {}
+        try:
+            os.remove(self.dbfile)
+        except:
+            pass
+        self.dbfile = ''
