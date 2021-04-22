@@ -19,7 +19,14 @@ def add_get(name: str, start: str, end: str, amount: int) -> Union[Course, Error
     :return: the training course that has been added to the database
     :rtype: Union[Course, Error]
     """
-    course = Course(name, start, end, amount)
+    try:
+        course = Course(name, start, end, amount)
+    except (ValueError, TypeError) as err:
+        return Error(
+            status=400,
+            title="Bad Request",
+            detail=str(err)
+        ), 400
     db = Database()
     record = db.add(course)
     db.close()
@@ -34,15 +41,18 @@ def add_post(course: Course=None) -> Union[Course, Error]:
     :return: the training course that has been added to the database
     :rtype: Union[Course, Error]
     """
-    if connexion.request.is_json:
-        course = Course.from_dict(connexion.request.get_json())
-        db = Database()
-        record = db.add(course)
-        db.close()
-        return record
-    return Error(
+    try:
+        if connexion.request.is_json:
+            course = Course.from_dict(connexion.request.get_json())
+        else:
+            raise ValueError("Wrong data format in request body")
+    except (ValueError, TypeError) as err:
+        return Error(
             status=400,
             title="Bad Request",
-            detail="Invalid data format transmitted.",
-            type="about:blank"
+            detail=str(err)
         ), 400
+    db = Database()
+    record = db.add(course)
+    db.close()
+    return record

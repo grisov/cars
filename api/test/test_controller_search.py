@@ -300,6 +300,33 @@ class TestSearchController(BaseTestCase):
         ids = [course.id for course in courses]
         self.assertSetEqual(set(ids), set((3,5,6)), "List of IDs of found records")
 
+    def test_search_get_by_start_wrong(self) -> None:
+        """Search courses with start date in wrong format
+        using GET method.
+        """
+        query = [
+            ("start", "19.08.2019")
+        ]
+        response = self.client.get(
+            "/api/v1/search",
+            headers=self.headers,
+            query_string=query
+        )
+        self.assert400(response, "Status code")
+        self.assertTrue(response.is_json, "Content-Type")
+        self.assertIn("application/json", response.content_type, "Content-Type")
+        self.assertEqual(response.mimetype, "application/json", "MIME Type")
+        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
+        self.assertEqual(response.charset, "utf-8", "Content charset")
+
+        with self.assertRaises(TypeError):
+            course = Course(**response.json)
+        error = Error(**response.json)
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
+        self.assertEqual(error.status, response.status_code, "Status code")
+        self.assertEqual(error.title, "Bad Request", "Error title")
+        self.assertEqual(error.type, "about:blank", "Error type")
+
     def test_search_post_by_start(self) -> None:
         """Search courses beginning from start date
         using POST method.
@@ -325,6 +352,35 @@ class TestSearchController(BaseTestCase):
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
         self.assertSetEqual(set(ids), set((3,5,6)), "List of IDs of found records")
+
+    def test_search_post_by_start_wrong(self) -> None:
+        """Search courses with start date in wrong format
+        using POST method.
+        """
+        self.headers["Content-Type"] = "application/json"
+        query = {
+            "start": "25/12/2021"
+        }
+        response = self.client.post(
+            "/api/v1/search",
+            headers=self.headers,
+            data=json.dumps(query),
+            content_type=self.headers["Content-Type"]
+        )
+        self.assert400(response, "Status code")
+        self.assertTrue(response.is_json, "Content-Type")
+        self.assertIn("application/json", response.content_type, "Content-Type")
+        self.assertEqual(response.mimetype, "application/json", "MIME Type")
+        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
+        self.assertEqual(response.charset, "utf-8", "Content charset")
+
+        with self.assertRaises(TypeError):
+            course = Course(**response.json)
+        error = Error(**response.json)
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
+        self.assertEqual(error.status, response.status_code, "Status code")
+        self.assertEqual(error.title, "Bad Request", "Error title")
+        self.assertEqual(error.type, "about:blank", "Error type")
 
     def test_search_get_before_end(self) -> None:
         """Search for courses that graduate before the end date
@@ -352,6 +408,33 @@ class TestSearchController(BaseTestCase):
         ids = [course.id for course in courses]
         self.assertSetEqual(set(ids), set((1,2,4,6)), "List of IDs of found records")
 
+    def test_search_get_before_end_wrong(self) -> None:
+        """Search courses with gratuation date in wrong format
+        using GET method.
+        """
+        query = [
+            ("end", "29\05\2020")
+        ]
+        response = self.client.get(
+            "/api/v1/search",
+            headers=self.headers,
+            query_string=query
+        )
+        self.assert400(response, "Status code")
+        self.assertTrue(response.is_json, "Content-Type")
+        self.assertIn("application/json", response.content_type, "Content-Type")
+        self.assertEqual(response.mimetype, "application/json", "MIME Type")
+        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
+        self.assertEqual(response.charset, "utf-8", "Content charset")
+
+        with self.assertRaises(TypeError):
+            course = Course(**response.json)
+        error = Error(**response.json)
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
+        self.assertEqual(error.status, response.status_code, "Status code")
+        self.assertEqual(error.title, "Bad Request", "Error title")
+        self.assertEqual(error.type, "about:blank", "Error type")
+
     def test_search_post_before_end(self) -> None:
         """Search for courses that graduate before the end date
         using POST method.
@@ -377,6 +460,35 @@ class TestSearchController(BaseTestCase):
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
         self.assertSetEqual(set(ids), set((1,2,4,6)), "List of IDs of found records")
+
+    def test_search_post_before_end_wrong(self) -> None:
+        """Search courses with gratuation date in wrong format
+        using POST method.
+        """
+        self.headers["Content-Type"] = "application/json"
+        query = {
+            "end": "20 Apr 2019"
+        }
+        response = self.client.post(
+            "/api/v1/search",
+            headers=self.headers,
+            data=json.dumps(query),
+            content_type=self.headers["Content-Type"]
+        )
+        self.assert400(response, "Status code")
+        self.assertTrue(response.is_json, "Content-Type")
+        self.assertIn("application/json", response.content_type, "Content-Type")
+        self.assertEqual(response.mimetype, "application/json", "MIME Type")
+        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
+        self.assertEqual(response.charset, "utf-8", "Content charset")
+
+        with self.assertRaises(TypeError):
+            course = Course(**response.json)
+        error = Error(**response.json)
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
+        self.assertEqual(error.status, response.status_code, "Status code")
+        self.assertEqual(error.title, "Bad Request", "Error title")
+        self.assertEqual(error.type, "about:blank", "Error type")
 
     def test_search_get_all_parameters(self) -> None:
         """Search courses via all parameters

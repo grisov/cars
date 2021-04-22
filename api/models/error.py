@@ -92,12 +92,12 @@ class Error(Model):
         self._detail = detail
 
     @property
-    def type(self) -> Optional[str]:
+    def type(self) -> str:
         """Get the type of the error.
         :return: The error type
-        :rtype: Optional[str]
+        :rtype: str
         """
-        return self._type
+        return self._type or "about:blank"
 
     @type.setter
     def type(self, type: Optional[str]) -> None:

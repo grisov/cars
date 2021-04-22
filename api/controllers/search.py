@@ -22,7 +22,14 @@ def search_get(
     :return: the list of courses that meet the search criteria
     :rtype: Union[List[Course], Error]
     """
-    query = SearchData(name, start, end)
+    try:
+        query = SearchData(name, start, end)
+    except (ValueError, TypeError) as err:
+        return Error(
+            status=400,
+            title="Bad Request",
+            detail=str(err)
+        ), 400
     db = Database()
     result = db.search(query)
     db.close()
@@ -37,15 +44,18 @@ def search_post(search_data: Optional[SearchData]=None) -> Union[List[Course], E
     :return: the list of courses that meet the search criteria
     :rtype: Union[List[Course], Error]
     """
-    if connexion.request.is_json:
-        query = SearchData.from_dict(connexion.request.get_json())
-        db = Database()
-        result = db.search(query)
-        db.close()
-        return result
-    return Error(
+    try:
+        if connexion.request.is_json:
+            query = SearchData.from_dict(connexion.request.get_json())
+        else:
+            raise ValueError("Wrong data format in request body")
+    except (ValueError, TypeError) as err:
+        return Error(
             status=400,
             title="Bad Request",
-            detail="Invalid data format transmitted.",
-            type="about:blank"
+            detail=str(err)
         ), 400
+    db = Database()
+    result = db.search(query)
+    db.close()
+    return result

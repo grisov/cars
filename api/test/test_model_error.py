@@ -183,9 +183,12 @@ class TestErrorModel(unittest.TestCase):
             title="Service Unavailable"
         )
         self.assertIsNotNone(error.status)
+        self.assertEqual(error.status, 503)
         self.assertIsNotNone(error.title)
+        self.assertEqual(error.title, "Service Unavailable")
         self.assertIsNone(error.detail)
-        self.assertIsNone(error.type)
+        self.assertIsNotNone(error.type)
+        self.assertEqual(error.type, "about:blank")
 
 
 if __name__ == '__main__':

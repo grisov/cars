@@ -18,8 +18,7 @@ def get_details(cid: int) -> Union[Course, Error]:
     return Error(
             status=204,
             title="No Content",
-            detail=f"There is no record with index {cid} in the database",
-            type="about:blank"
+            detail=f"There is no record with index {cid} in the database"
         ), 204
 
 
@@ -38,8 +37,7 @@ def remove(cid: int) -> Union[Course, Error]:
     return Error(
             status=204,
             title="No Content",
-            detail=f"There is no record with index {cid} in the database",
-            type="about:blank"
+            detail=f"There is no record with index {cid} in the database"
         ), 204
 
 
@@ -52,15 +50,18 @@ def update(cid: int, course: Optional[Course]=None) -> Union[Course, Error]:
     :return: the updated information about the course
     :rtype: Union[Course, Error]
     """
-    if connexion.request.is_json:
-        course = Course.from_dict(connexion.request.get_json())
-        db = Database()
-        record = db.update(cid, course)
-        db.close()
-        return record
-    return Error(
+    try:
+        if connexion.request.is_json:
+            course = Course.from_dict(connexion.request.get_json())
+        else:
+            raise ValueError("Wrong data format in request body")
+    except (ValueError, TypeError) as err:
+        return Error(
             status=400,
             title="Bad Request",
-            detail="Invalid data format transmitted.",
-            type="about:blank"
+            detail=str(err)
         ), 400
+    db = Database()
+    record = db.update(cid, course)
+    db.close()
+    return record
