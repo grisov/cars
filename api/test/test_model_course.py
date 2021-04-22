@@ -84,6 +84,25 @@ class TestCourseModel(unittest.TestCase):
         self.assertIsNotNone(course.end)
         self.assertEqual(course.end.isoformat(), "2029-12-31")
 
+    def test_comparison_start_end(self):
+        """Testing the comparison of start and end dates."""
+        course = Course()
+        course.start = "2020-08-17"
+        course.end = "2020-08-17"
+        course.end = "2020-08-18"
+        with self.assertRaises(ValueError):
+            course.end = "2020-08-16"
+            course.end = "2020-07-18"
+            course.end = "2019-08-18"
+
+        course.start = Data("2020-08-17").deserialize(date)
+        course.end = Data("2020-08-17").deserialize(date)
+        course.end = Data("2020-08-18").deserialize(date)
+        with self.assertRaises(ValueError):
+            course.end = Data("2020-08-16").deserialize(date)
+            course.end = Data("2020-07-18").deserialize(date)
+            course.end = Data("2019-08-18").deserialize(date)
+
     def test_required_amount(self):
         """Testing the required attribute of the data model."""
         course = Course(

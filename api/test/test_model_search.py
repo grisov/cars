@@ -33,8 +33,8 @@ class TestSearchDataModel(unittest.TestCase):
         self.assertEqual(sd.end.month, 7)
         self.assertEqual(sd.end.day, 17)
 
-    def test_required_name(self):
-        """Testing the required attribute of the data model."""
+    def test_valid_name_values(self):
+        """Testing the valid values of the name attribute."""
         sd = SearchData()
         sd.name="Yalantis"
         self.assertEqual(sd.name, 'Yalantis')
@@ -44,10 +44,34 @@ class TestSearchDataModel(unittest.TestCase):
         self.assertEqual(sd.name, 'asd')
         with self.assertRaises(ValueError):
             sd.name='x'
-        with self.assertRaises(ValueError):
             sd.name=''
         self.assertIsNotNone(sd.name)
         self.assertIsInstance(sd.name, (str))
+
+    def test_comparison_start_end(self):
+        """Testing the comparison of start and end dates."""
+        sd = SearchData()
+        sd.end = "2021-05-05"
+        sd.start = "2021-05-05"
+        sd.end = "2021-05-06"
+        with self.assertRaises(ValueError):
+            sd.end = "2021-05-04"
+            sd.end = "2021-04-05"
+            sd.end = "2020-05-05"
+            SearchData(start="2021-07-07", end="2021-07-06")
+
+        sd = SearchData()
+        sd.end = Data("2021-05-05").deserialize(date)
+        sd.start = Data("2021-05-05").deserialize(date)
+        sd.end = Data("2021-05-06").deserialize(date)
+        with self.assertRaises(ValueError):
+            sd.end = Data("2021-05-04").deserialize(date)
+            sd.end = Data("2021-04-05").deserialize(date)
+            sd.end = Data("2020-05-05").deserialize(date)
+            SearchData(
+                start=Data("2021-07-07").deserialize(date),
+                end=Data("2021-07-06").deserialize(date)
+            )
 
     def test_openapi_types(self):
         """Testing declared attribute types."""

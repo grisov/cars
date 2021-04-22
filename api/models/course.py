@@ -98,7 +98,10 @@ class Course(Model):
         """
         if end is None:
             raise ValueError("Invalid value for `end`, must not be `None`")
-        self._end = self.validate_date(end)
+        dt = self.validate_date(end)
+        if type(self.start) == type(dt) == date and self.start > dt:
+            raise ValueError("Invalid value for `end`, must be greater than or equal to `start`")
+        self._end = dt
 
     @property
     def amount(self) -> int:

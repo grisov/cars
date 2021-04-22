@@ -80,7 +80,10 @@ class SearchData(Model):
         :param end: the graduation date of the course for searching
         :type end: Union[date, str, None]
         """
-        self._end = self.validate_date(end)
+        dt = self.validate_date(end)
+        if self.start is not None and type(self.start) == type(dt) == date and self.start > dt:
+            raise ValueError("Invalid value for `end`, must be greater than or equal to `start`")
+        self._end = dt
 
     def to_str(self) -> str:
         """Return the string representation of the search model.
