@@ -3,6 +3,7 @@ import sqlite3
 from typing import List, Optional
 from api.models.course import Course
 from api.models.search_data import SearchData
+from api import logger
 
 
 class Database(object):
@@ -19,8 +20,11 @@ class Database(object):
         if file.strip() == '':
             from api import app
             file = app.config["DATABASE"]
-        self._conn = sqlite3.connect(file)
-        self._cur = self._conn.cursor()
+        try:
+            self._conn = sqlite3.connect(file)
+            self._cur = self._conn.cursor()
+        except Exception as e:
+            logger.error("Unable to connect to the database; %s", e)
         self.create_table()
 
     def create_table(self) -> None:
@@ -35,8 +39,8 @@ class Database(object):
                     amount INTEGER NOT NULL
                 )"""
             )
-        except sqlite3.Error:
-            pass
+        except sqlite3.Error as e:
+            logger.debug("An error occurred while creating the table in the database; %s", e)
 
     def get(self, id: int) -> Optional[Course]:
         """Get course information by ID in database.
@@ -52,7 +56,7 @@ class Database(object):
             self._cur.execute(query, (id,))
             record = self._cur.fetchone()
         except sqlite3.Error as e:
-            print(e)
+            logger.error("Unable to retrieve data from the database; %s", e)
         if record:
             return Course(
                 name=record[1],
@@ -78,7 +82,7 @@ class Database(object):
             course.id = self._cur.lastrowid or -1
             self._conn.commit()
         except sqlite3.Error as e:
-            print(e)
+            logger.error("Unable to add entry to the database; %s", e)
             return
         return course
 
@@ -97,7 +101,7 @@ class Database(object):
             self._cur.execute(query, (id,))
             self._conn.commit()
         except sqlite3.Error as e:
-            print(e)
+            logger.error("Unable to delete entry from the database; %s", e)
             return
         return course
 
@@ -119,7 +123,7 @@ class Database(object):
             self._cur.execute(query, (course.name, course.start.isoformat(), course.end.isoformat(), course.amount, id))
             self._conn.commit()
         except sqlite3.Error as e:
-            print(e)
+            logger.error("Unable to update record in the database; %s", e)
             return
         course.id = id
         return course
@@ -145,7 +149,7 @@ class Database(object):
             )
             records = self._cur.fetchall()
         except sqlite3.Error as e:
-            print(e)
+            logger.error("Unable to retrieve the list of records from the database; %s", e)
         return [Course(
                 name=rec[1],
                 start=rec[2],
