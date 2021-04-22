@@ -1,4 +1,4 @@
-import os.path
+from __future__ import annotations
 import sqlite3
 from typing import List, Optional
 from api.models.course import Course
@@ -6,7 +6,7 @@ from api.models.search_data import SearchData
 
 
 class Database(object):
-    """Object-Relational Mapping class for working with SQLite3."""
+    """Object-Relational Mapping class for working with SQLite3 DB."""
 
     def __init__(
             self,
@@ -61,7 +61,7 @@ class Database(object):
                 amount=record[4],
                 id=record[0]
             )
-        return None
+        return
 
     def add(self, course: Optional[Course]) -> Optional[Course]:
         """Add a training course to the database.
@@ -71,7 +71,7 @@ class Database(object):
         :rtype: Optional[Course]
         """
         if course is None:
-            return None
+            return
         query = "INSERT INTO courses (name, start, end, amount) VALUES (?,?,?,?)"
         try:
             self._cur.execute(query, (course.name, course.start.isoformat(), course.end.isoformat(), course.amount))
@@ -79,7 +79,7 @@ class Database(object):
             self._conn.commit()
         except sqlite3.Error as e:
             print(e)
-            return None
+            return
         return course
 
     def remove(self, id: int) -> Optional[Course]:
@@ -90,7 +90,7 @@ class Database(object):
         :rtype: Optional[Course]
         """
         if id <= 0:
-            return None
+            return
         query = "DELETE FROM courses WHERE id=?"
         course = self.get(id)
         try:
@@ -98,7 +98,7 @@ class Database(object):
             self._conn.commit()
         except sqlite3.Error as e:
             print(e)
-            return None
+            return
         return course
 
     def update(self, id: int, course: Optional[Course]) -> Optional[Course]:
@@ -111,7 +111,7 @@ class Database(object):
         :rtype: Optional[Course]
         """
         if id is None or id <= 0 or course is None:
-            return None
+            return
         if self.get(id) is None:
             return self.add(course)
         query = "UPDATE courses SET name=?, start=?, end=?, amount=? WHERE id=?"
@@ -120,7 +120,7 @@ class Database(object):
             self._conn.commit()
         except sqlite3.Error as e:
             print(e)
-            return None
+            return
         course.id = id
         return course
 
@@ -155,6 +155,15 @@ class Database(object):
             ) for rec in records]
 
     def close(self) -> None:
-            self._cur.close()
-            if self._conn:
-                self._conn.close()
+        """Close the database descriptors."""
+        self._cur.close()
+        if self._conn:
+            self._conn.close()
+
+    def __enter__(self) -> Database:
+        """Initial endpoint of the context manager."""
+        return self
+
+    def __exit__(self, type, value, traceback) -> Optional[bool]:
+        """Always called when exiting from the context manager."""
+        self.close()

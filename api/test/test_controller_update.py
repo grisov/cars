@@ -18,10 +18,9 @@ class TestUpdateController(BaseTestCase):
             Course("Framework Django", "2022-05-05", "2024-11-19", 25),
             Course("Machine Learning", "2023-06-07", "2025-10-17", 19)
         ]
-        db = Database()
-        for course in courses:
-            db.add(course)
-        db.close()
+        with Database() as db:
+            for course in courses:
+                db.add(course)
 
     def test_without_parameters(self) -> None:
         """Try to make update request without parameters."""
@@ -90,9 +89,8 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
-        db = Database()
-        course = db.get(id)
-        db.close()
+        with Database() as db:
+            course = db.get(id)
         self.assertIsNotNone(course,
             "An entry with the specified ID is still exist in the DB")
         self.assertEqual(course.name, "Framework Django",
@@ -134,7 +132,8 @@ class TestUpdateController(BaseTestCase):
     def test_exist_course_to_valid(self) -> None:
         """Update an existing course to a new valid one."""
         id = 3
-        old_course = Database().get(id)
+        with Database() as db:
+            old_course = db.get(id)
         self.assertIsNotNone(old_course,
             f"The record with ID={id} is exists in the DB")
         new_course = Course(
@@ -163,7 +162,8 @@ class TestUpdateController(BaseTestCase):
             f"The response charset is `{response.charset}`")
 
         course = Course(**response.json)
-        db_course = Database().get(id)
+        with Database() as db:
+            db_course = db.get(id)
         self.assertEqual(course.id, db_course.id,
             f"The ID of the updated course is `{course.id}`")
         self.assertNotEqual(course.name, old_course.name,
@@ -188,7 +188,8 @@ class TestUpdateController(BaseTestCase):
         The course will be added to the database and automatically assigned new ID.
         """
         id = 795
-        old_course = Database().get(id)
+        with Database() as db:
+            old_course = db.get(id)
         self.assertIsNone(old_course,
             "There is no record in the database with the specified ID")
         new_course = Course(
@@ -217,7 +218,8 @@ class TestUpdateController(BaseTestCase):
             f"The response charset is `{response.charset}`")
 
         course = Course(**response.json)
-        db_course = Database().get(course.id)
+        with Database() as db:
+            db_course = db.get(course.id)
         self.assertNotEqual(course.id, id,
             f"The record was assigned to ID={course.id}, which is different from the original {id}")
         self.assertEqual(course, db_course,
@@ -226,7 +228,8 @@ class TestUpdateController(BaseTestCase):
     def test_exist_course_to_incomplete(self) -> None:
         """Submit incomplete data to update an existing record."""
         id = 3
-        old_course = Database().get(id)
+        with Database() as db:
+            old_course = db.get(id)
         self.assertIsNotNone(old_course,
             f"There is an entry with an ID={id} in the database")
         incomplete_data = {
@@ -264,9 +267,8 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
-        db = Database()
-        course = db.get(id)
-        db.close()
+        with Database() as db:
+            course = db.get(id)
         self.assertIsNotNone(course,
             "An entry with the specified ID is still exist in the DB")
         self.assertEqual(course.name, "Machine Learning",
@@ -275,7 +277,8 @@ class TestUpdateController(BaseTestCase):
     def test_exist_course_to_wrong(self) -> None:
         """Submit wrong data to update an existing record."""
         id = 1
-        old_course = Database().get(id)
+        with Database() as db:
+            old_course = db.get(id)
         self.assertIsNotNone(old_course,
             f"There is an entry with an ID={id} in the database")
         wrong_data = {
@@ -315,9 +318,8 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
-        db = Database()
-        course = db.get(id)
-        db.close()
+        with Database() as db:
+            course = db.get(id)
         self.assertIsNotNone(course,
             "An entry with the specified ID is still exist in the DB")
         self.assertEqual(course.name, "Python forever!",

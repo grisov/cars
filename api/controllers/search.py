@@ -30,9 +30,8 @@ def search_get(
             title="Bad Request",
             detail=str(err)
         ), 400
-    db = Database()
-    result = db.search(query)
-    db.close()
+    with Database() as db:
+        result = db.search(query)
     return result
 
 
@@ -55,7 +54,6 @@ def search_post(search_data: Optional[SearchData]=None) -> Union[List[Course], E
             title="Bad Request",
             detail=str(err)
         ), 400
-    db = Database()
-    result = db.search(query)
-    db.close()
+    with Database() as db:
+        result = db.search(query)
     return result

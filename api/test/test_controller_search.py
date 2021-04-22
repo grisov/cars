@@ -22,10 +22,9 @@ class TestSearchController(BaseTestCase):
             Course("Level three", "2023-06-07", "2025-10-17", 19),
             Course("What is the Python?", "2023-03-23", "2023-08-28", 17)
         ]
-        db = Database()
-        for course in courses:
-            db.add(course)
-        db.close()
+        with Database() as db:
+            for course in courses:
+                db.add(course)
 
     def test_get_without_parameters(self) -> None:
         """Search request without parameters

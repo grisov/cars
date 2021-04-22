@@ -27,9 +27,8 @@ def add_get(name: str, start: str, end: str, amount: int) -> Union[Course, Error
             title="Bad Request",
             detail=str(err)
         ), 400
-    db = Database()
-    record = db.add(course)
-    db.close()
+    with Database() as db:
+        record = db.add(course)
     return record
 
 
@@ -52,7 +51,6 @@ def add_post(course: Course=None) -> Union[Course, Error]:
             title="Bad Request",
             detail=str(err)
         ), 400
-    db = Database()
-    record = db.add(course)
-    db.close()
+    with Database() as db:
+        record = db.add(course)
     return record

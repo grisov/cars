@@ -12,7 +12,8 @@ def get_details(cid: int) -> Union[Course, Error]:
     :return: the detailed information about the training course
     :rtype: Union[Course, Error]
     """
-    course = Database().get(cid)
+    with Database() as db:
+        course = db.get(cid)
     if course is not None:
         return course
     return Error(
@@ -29,9 +30,8 @@ def remove(cid: int) -> Union[Course, Error]:
     :return: the detailed information about the deleted course
     :rtype: Union[Course, Error]
     """
-    db = Database()
-    course = db.remove(cid)
-    db.close()
+    with Database() as db:
+        course = db.remove(cid)
     if course is not None:
         return course
     return Error(
@@ -61,7 +61,6 @@ def update(cid: int, course: Optional[Course]=None) -> Union[Course, Error]:
             title="Bad Request",
             detail=str(err)
         ), 400
-    db = Database()
-    record = db.update(cid, course)
-    db.close()
+    with Database() as db:
+        record = db.update(cid, course)
     return record

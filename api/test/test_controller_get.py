@@ -18,10 +18,9 @@ class TestGetController(BaseTestCase):
             Course("Level two", "2022-05-05", "2024-11-19", 25),
             Course("Level three", "2023-06-07", "2025-10-17", 19)
         ]
-        db = Database()
-        for course in courses:
-            db.add(course)
-        db.close()
+        with Database() as db:
+            for course in courses:
+                db.add(course)
 
     def test_get_existing(self) -> None:
         """Get an existing record."""
