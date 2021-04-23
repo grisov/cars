@@ -34,19 +34,33 @@ class TestSearchController(BaseTestCase):
             "/api/v1/search",
             headers=self.headers
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 6, "Six records are found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((1,2,3,4,5,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((1, 2, 3, 4, 5, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search()
+        db_ids = [course.id for course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "List of IDs of all records found in the database")
 
     def test_get_by_name(self) -> None:
         """Search by full course name
@@ -60,16 +74,36 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 1, "Only one record found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 1,
+            "The search request was returned {len(response.json)} record")
         course = Course(**response.json[0])
-        self.assertEqual(course.id, 3, "Record with ID=3 in DB")
+        self.assertEqual(course.id, 3,
+            f"The record with ID={course.id} was found")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(name="Level two"))
+        self.assertEqual(len(db_courses), len(response.json),
+            f"Search in database was returned {len(db_courses)} result")
+        self.assertEqual(db_courses[0], course,
+            "The direct search in the database coincides with the result of the search query")
 
     def test_get_by_name_substr(self) -> None:
         """Search by part of the name
@@ -83,19 +117,39 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 3, "Three records are found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 3,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((1, 3, 5)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((1, 3, 5)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(name="Level"))
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_get_by_name_no_results(self) -> None:
         """Search by name without results
@@ -109,14 +163,31 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 0, "No records are found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 0,
+            "The search request was returned {len(response.json)} record")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(name="I do not know what I am looking for"))
+        self.assertEqual(len(db_courses), len(response.json),
+            f"Search in database was returned {len(db_courses)} result")
 
     def test_get_by_empty_name(self) -> None:
         """Search using empty course name
@@ -130,6 +201,7 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -143,6 +215,7 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -155,6 +228,10 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
+        # Validation of data
+        with self.assertRaises(ValueError):
+            SearchData(name="")
+
     def test_post_without_parameters(self) -> None:
         """Search request without parameters
         using POST method.
@@ -166,19 +243,37 @@ class TestSearchController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 6, "Six records are found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 6,
+            "The search request was returned {len(response.json)} records")
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((1,2,3,4,5,6)), "List of IDs of found records")
+        self.assertSetEqual(set(ids), set((1, 2, 3, 4, 5, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search()
+        db_ids = [course.id for course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "Direct search in the database yielded the same result")
 
     def test_post_by_name(self) -> None:
         """Search by full course name
@@ -192,16 +287,36 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query.to_dict()),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 1, "Only one record found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 1,
+            "The search request was returned {len(response.json)} record")
         course = Course(**response.json[0])
-        self.assertEqual(course.id, 4, "Record with ID=4 in DB")
+        self.assertEqual(course.id, 4,
+            f"The record with ID={course.id} was found")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(name="Python forever!"))
+        self.assertEqual(len(db_courses), len(response.json),
+            f"Search in database was returned {len(db_courses)} result")
+        self.assertEqual(db_courses[0], course,
+            "The direct search in the database coincides with the result of the search query")
 
     def test_post_by_name_substr(self) -> None:
         """Search by part of the name
@@ -215,19 +330,39 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query.to_dict()),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 3, "Three records are found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 3,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((2, 4, 6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((2, 4, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(name="Python"))
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_post_by_name_no_results(self) -> None:
         """Search by name without results
@@ -241,14 +376,31 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query.to_dict()),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 0, "No records are found")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 0,
+            "The search request was returned {len(response.json)} record")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(name="I am going there - I do not know where"))
+        self.assertEqual(len(db_courses), len(response.json),
+            f"Search in database was returned {len(db_courses)} result")
 
     def test_post_by_empty_name(self) -> None:
         """Search using empty course name
@@ -262,6 +414,7 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -275,6 +428,7 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -286,6 +440,10 @@ class TestSearchController(BaseTestCase):
             f"The error title is `{error.title}`")
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
+
+        # Validation of data
+        with self.assertRaises(ValueError):
+            SearchData(name="")
 
     def test_get_by_start(self) -> None:
         """Search courses beginning from start date
@@ -299,19 +457,39 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 3, "All found records")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 3,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((3,5,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((3, 5, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(start="2022-02-22"))
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_get_by_start_wrong(self) -> None:
         """Search courses with start date in wrong format
@@ -325,6 +503,7 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -338,6 +517,7 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -349,6 +529,10 @@ class TestSearchController(BaseTestCase):
             f"The error title is `{error.title}`")
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
+
+        # Validation of data
+        with self.assertRaises(ValueError):
+            SearchData(start="19.08.2019")
 
     def test_post_by_start(self) -> None:
         """Search courses beginning from start date
@@ -362,19 +546,39 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query.to_dict()),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 3, "All found records")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 3,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((3,5,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((3, 5, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(start="2022-02-22"))
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_post_by_start_wrong(self) -> None:
         """Search courses with start date in wrong format
@@ -390,6 +594,7 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -403,6 +608,7 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -414,6 +620,10 @@ class TestSearchController(BaseTestCase):
             f"The error title is `{error.title}`")
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
+
+        # Validation of data
+        with self.assertRaises(ValueError):
+            SearchData(start="25/12/2021")
 
     def test_get_before_end(self) -> None:
         """Search for courses that graduate before the end date
@@ -427,19 +637,39 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 4, "All found records")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 4,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((1,2,4,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((1, 2, 4, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(end="2024-04-24"))
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_get_before_end_wrong(self) -> None:
         """Search courses with gratuation date in wrong format
@@ -453,6 +683,7 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -466,6 +697,7 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -477,6 +709,10 @@ class TestSearchController(BaseTestCase):
             f"The error title is `{error.title}`")
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
+
+        # Validation of data
+        with self.assertRaises(ValueError):
+            SearchData(end="29\05\2020")
 
     def test_post_before_end(self) -> None:
         """Search for courses that graduate before the end date
@@ -490,19 +726,39 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query.to_dict()),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 4, "All found records")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 4,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((1,2,4,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((1, 2, 4, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(SearchData(end="2024-04-24"))
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_post_before_end_wrong(self) -> None:
         """Search courses with gratuation date in wrong format
@@ -518,6 +774,7 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -531,6 +788,7 @@ class TestSearchController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -542,6 +800,10 @@ class TestSearchController(BaseTestCase):
             f"The error title is `{error.title}`")
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
+
+        # Validation of data
+        with self.assertRaises(ValueError):
+            SearchData(end="20 Apr 2019")
 
     def test_get_all_parameters(self) -> None:
         """Search courses via all parameters
@@ -557,19 +819,45 @@ class TestSearchController(BaseTestCase):
             headers=self.headers,
             query_string=query
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 2, "All found records")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 2,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((2,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((2, 6)),
+            "List of IDs of found records")
+
+        # Check database
+        with Database() as db:
+            db_courses = db.search(
+                SearchData(
+                    name="Python",
+                    start="2021-06-17",
+                    end="2024-04-24"
+                )
+            )
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
 
     def test_post_all_parameters(self) -> None:
         """Search courses via all parameters
@@ -587,82 +875,144 @@ class TestSearchController(BaseTestCase):
             data=json.dumps(query.to_dict()),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-        self.assertIsInstance(response.json, list, "Response is the list")
-        self.assertEqual(len(response.json), 2, "All found records")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        self.assertIsInstance(response.json, list,
+            "The data type in the response is a list")
+        self.assertEqual(len(response.json), 2,
+            "The search request was returned {len(response.json)} record")
 
         # Validation of data
         courses = [Course(**item) for item in response.json]
         ids = [course.id for course in courses]
-        self.assertSetEqual(set(ids), set((2,6)), "List of IDs of found records")
+        # Check response content
+        self.assertSetEqual(set(ids), set((2, 6)),
+            "List of IDs of found records")
 
-    def test_delete(self) -> None:
+        # Check database
+        with Database() as db:
+            db_courses = db.search(
+                SearchData(
+                    name="Python",
+                    start="2021-06-17",
+                    end="2024-04-24"
+                )
+            )
+        db_ids = [db_course.id for db_course in db_courses]
+        self.assertSetEqual(set(db_ids), set(ids),
+            "A direct search in the database yielded the same result")
+
+    def test_delete_method(self) -> None:
         """Request to search using DELETE method."""
         response = self.client.delete(
             "/api/v1/search",
             headers=self.headers
         )
-        self.assert405(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/problem+json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/problem+json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert405(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/problem+json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/problem+json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/problem+json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
-        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
-        self.assertEqual(error.status, response.status_code, "Status code")
-        self.assertEqual(error.title, "Method Not Allowed", "Error title")
-        self.assertEqual(error.type, "about:blank", "Error type")
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
+            f"The response attributes are `{str(list(response.json))}`")
+        self.assertEqual(error.status, response.status_code,
+            f"The error status code is `{error.status}`")
+        self.assertEqual(error.title, "Method Not Allowed",
+            f"The error title is `{error.title}`")
+        self.assertEqual(error.type, "about:blank",
+            f"The error type is `{error.type}`")
 
-    def test_put(self) -> None:
+    def test_put_method(self) -> None:
         """Request to search using PUT method."""
         response = self.client.put(
             "/api/v1/search",
             headers=self.headers
         )
-        self.assert405(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/problem+json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/problem+json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert405(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/problem+json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/problem+json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/problem+json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
-        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
-        self.assertEqual(error.status, response.status_code, "Status code")
-        self.assertEqual(error.title, "Method Not Allowed", "Error title")
-        self.assertEqual(error.type, "about:blank", "Error type")
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
+            f"The response attributes are `{str(list(response.json))}`")
+        self.assertEqual(error.status, response.status_code,
+            f"The error status code is `{error.status}`")
+        self.assertEqual(error.title, "Method Not Allowed",
+            f"The error title is `{error.title}`")
+        self.assertEqual(error.type, "about:blank",
+            f"The error type is `{error.type}`")
 
-    def test_patch(self) -> None:
+    def test_patch_method(self) -> None:
         """Request to search using PATCH method."""
         response = self.client.patch(
             "/api/v1/search",
             headers=self.headers
         )
-        self.assert405(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/problem+json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/problem+json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert405(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/problem+json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/problem+json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/problem+json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
-        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
-        self.assertEqual(error.status, response.status_code, "Status code")
-        self.assertEqual(error.title, "Method Not Allowed", "Error title")
-        self.assertEqual(error.type, "about:blank", "Error type")
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
+            f"The response attributes are `{str(list(response.json))}`")
+        self.assertEqual(error.status, response.status_code,
+            f"The error status code is `{error.status}`")
+        self.assertEqual(error.title, "Method Not Allowed",
+            f"The error title is `{error.title}`")
+        self.assertEqual(error.type, "about:blank",
+            f"The error type is `{error.type}`")
 
     def test_headers(self) -> None:
         """Check only the headers for the search query."""
@@ -670,13 +1020,21 @@ class TestSearchController(BaseTestCase):
             "/api/v1/search",
             headers=self.headers
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(BadRequest):
             course = Course(**response.json)
             error = Error(**response.json)

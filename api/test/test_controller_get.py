@@ -22,52 +22,13 @@ class TestGetController(BaseTestCase):
             for course in courses:
                 db.add(course)
 
-    def test_get_existing(self) -> None:
-        """Get an existing record."""
-        response = self.client.get(
-            "/api/v1/course/2",
-            headers=self.headers
-        )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-
-        course = Course(**response.json)
-        self.assertEqual(course.name, "Level two", "Name value")
-        self.assertEqual(course.start.isoformat(), "2022-05-05", "Start date")
-        self.assertEqual(course.end.isoformat(), "2024-11-19", "End date")
-        self.assertEqual(course.amount, 25, "Amount value")
-        self.assertEqual(course.id, 2, "ID value")
-
-    def test_get_missing(self) -> None:
-        """Try to get the missing entry."""
-        response = self.client.get(
-            "/api/v1/course/7",
-            headers=self.headers
-        )
-        self.assertStatus(response, 204, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
-
-        with self.assertRaises(BadRequest):
-            course = Course(**response.json)
-            error = Error(**response.json)
-        self.assertEqual(response.data, b"", "Empty response")
-
-    def test_get_without_id(self) -> None:
-        """Try to get the entry
-        without specifying the ID.
-        """
+    def test_get_without_parameters(self) -> None:
+        """Try to get the entry without specifying the ID."""
         response = self.client.get(
             "/api/v1/course/",
             headers=self.headers
         )
+        # Check response format
         self.assert404(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -81,6 +42,7 @@ class TestGetController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -93,6 +55,74 @@ class TestGetController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
+    def test_get_existing(self) -> None:
+        """Get an existing record."""
+        response = self.client.get(
+            "/api/v1/course/2",
+            headers=self.headers
+        )
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        course = Course(**response.json)
+        self.assertEqual(course.name, "Level two",
+        f"The name of the course is `{course.name}`")
+        self.assertEqual(course.start.isoformat(), "2022-05-05",
+        f"The the course will start on `{course.start}`")
+        self.assertEqual(course.end.isoformat(), "2024-11-19",
+        f"The the course will end on `{course.end}`")
+        self.assertEqual(course.amount, 25,
+            f"Number of lectures in the course is `{course.amount}`")
+        self.assertEqual(course.id, 2,
+            f"The ID of the course in the database is `{course.id}`")
+
+        # Check database
+        with Database() as db:
+            db_course = db.get(2)
+        self.assertEqual(db_course, course,
+            "The obtained course is identical to the data in the database")
+
+    def test_get_missing(self) -> None:
+        """Try to get the missing entry."""
+        with Database() as db:
+            self.assertIsNone(db.get(789),
+                "There is no record for the specified ID in the database")
+        response = self.client.get(
+            "/api/v1/course/789",
+            headers=self.headers
+        )
+        # Check response format
+        self.assertStatus(response, 204,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
+
+        # Check response content
+        with self.assertRaises(BadRequest):
+            course = Course(**response.json)
+            error = Error(**response.json)
+        self.assertEqual(response.data, b"", "Empty response")
+
     def test_get_using_post(self) -> None:
         """Try to get the entry using POST method."""
         self.headers["Content-Type"] = "application/json"
@@ -102,20 +132,32 @@ class TestGetController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
-        self.assert405(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/problem+json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/problem+json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert405(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/problem+json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/problem+json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/problem+json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
-        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
-        self.assertEqual(error.status, response.status_code, "Status code")
-        self.assertEqual(error.title, "Method Not Allowed", "Error title")
-        self.assertEqual(error.type, "about:blank", "Error type")
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
+            f"The response attributes are `{str(list(response.json))}`")
+        self.assertEqual(error.status, response.status_code,
+            f"The error status code is `{error.status}`")
+        self.assertEqual(error.title, "Method Not Allowed",
+            f"The error title is `{error.title}`")
+        self.assertEqual(error.type, "about:blank",
+            f"The error type is `{error.type}`")
 
     def test_get_using_patch(self) -> None:
         """Try to get the entry using PATCH method."""
@@ -126,20 +168,32 @@ class TestGetController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
-        self.assert405(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/problem+json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/problem+json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/problem+json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert405(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/problem+json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/problem+json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/problem+json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
-        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")), "Keys in response")
-        self.assertEqual(error.status, response.status_code, "Status code")
-        self.assertEqual(error.title, "Method Not Allowed", "Error title")
-        self.assertEqual(error.type, "about:blank", "Error type")
+        self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
+            f"The response attributes are `{str(list(response.json))}`")
+        self.assertEqual(error.status, response.status_code,
+            f"The error status code is `{error.status}`")
+        self.assertEqual(error.title, "Method Not Allowed",
+            f"The error title is `{error.title}`")
+        self.assertEqual(error.type, "about:blank",
+            f"The error type is `{error.type}`")
 
     def test_get_headers(self) -> None:
         """Get headers only."""
@@ -150,13 +204,21 @@ class TestGetController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
-        self.assert200(response, "Status code")
-        self.assertTrue(response.is_json, "Content-Type")
-        self.assertIn("application/json", response.content_type, "Content-Type")
-        self.assertEqual(response.mimetype, "application/json", "MIME Type")
-        self.assertEqual(response.headers["Content-Type"], "application/json", "Content type")
-        self.assertEqual(response.charset, "utf-8", "Content charset")
+        # Check response format
+        self.assert200(response,
+            f"The response status code is `{response.status_code}`")
+        self.assertTrue(response.is_json,
+            "The response has a valid json format")
+        self.assertIn("application/json", response.content_type,
+            f"The response content type is `{response.content_type}`")
+        self.assertEqual(response.mimetype, "application/json",
+            f"The response MIME type is `{response.mimetype}`")
+        self.assertEqual(response.headers["Content-Type"], "application/json",
+            f"The response Content-Type header is `{response.content_type}`")
+        self.assertEqual(response.charset, "utf-8",
+            f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(BadRequest):
             course = Course(**response.json)
             error = Error(**response.json)

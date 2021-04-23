@@ -30,6 +30,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert404(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -43,6 +44,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -64,6 +66,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -77,6 +80,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -89,6 +93,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
+        # Check database
         with Database() as db:
             course = db.get(id)
         self.assertIsNotNone(course,
@@ -104,6 +109,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -117,6 +123,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -148,6 +155,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps(new_course.to_dict()),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert200(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -161,6 +169,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response and database content
         course = Course(**response.json)
         with Database() as db:
             db_course = db.get(id)
@@ -204,6 +213,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps(new_course.to_dict()),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert200(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -217,6 +227,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response and database content
         course = Course(**response.json)
         with Database() as db:
             db_course = db.get(course.id)
@@ -242,6 +253,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps(incomplete_data),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -255,6 +267,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -267,6 +280,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
+        # Check database
         with Database() as db:
             course = db.get(id)
         self.assertIsNotNone(course,
@@ -293,6 +307,7 @@ class TestUpdateController(BaseTestCase):
             data=json.dumps(wrong_data),
             content_type=self.headers["Content-Type"]
         )
+        # Check response format
         self.assert400(response,
             f"The response status code is `{response.status_code}`")
         self.assertTrue(response.is_json,
@@ -306,6 +321,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(response.charset, "utf-8",
             f"The response charset is `{response.charset}`")
 
+        # Check response content
         with self.assertRaises(TypeError):
             course = Course(**response.json)
         error = Error(**response.json)
@@ -318,6 +334,7 @@ class TestUpdateController(BaseTestCase):
         self.assertEqual(error.type, "about:blank",
             f"The error type is `{error.type}`")
 
+        # Check database
         with Database() as db:
             course = db.get(id)
         self.assertIsNotNone(course,
