@@ -1,4 +1,5 @@
-# Simple REST API for Yalantis.  
+# Simple REST API for Yalantis.
+-------------------------------
 
 ## Overview
 This is the server part of the REST API implementation of the
@@ -41,6 +42,44 @@ This ReadMe document can also be found at the following address:
 
 ## Examples
 In the "examples/" directory you will find examples of queries to various API endpoints using Python.
+
+## Endpoints
+This API provides the following endpoints:
+
+1. Add course to the database.  
+  *Path:* /api/v1/add  
+  *Allowed methods:* GET, POST  
+  *Required fields:*  
+    - **name**: the name of the training course;
+    - **start**: the start date of the course in ISO format;
+    - **end**: the end date of the course in ISO format;
+    - **amount**: the number of lectures that make up the course.  
+  *Response*: the course that has been added to the database with its assigned ID.
+2. Get a course from the database by its ID.  
+  *Path:* /api/v1/course/{id}  
+  *Allowed method:* GET  
+  *Response*: the course from the database with its ID.
+3. Delete a course from the database by its ID.  
+  *Path:* /api/v1/course/{id}  
+  *Allowed method:* DELETE  
+  *Response*: the deleted course from the database with its ID.
+4. Update course information by the specified ID.  
+  *Path:* /api/v1/course/{id}  
+  *Allowed method:* PUT  
+  *Required fields:*  
+    - **name**: the name of the training course;
+    - **start**: the start date of the course in ISO format;
+    - **end**: the end date of the course in ISO format;
+    - **amount**: the number of lectures that make up the course.  
+  *Response*: the updated course in the database with its ID.
+5. Search the database by part of the name and filter by start or end dates.  
+  *Path:* /api/v1/search  
+  *Allowed methods:* GET, POST  
+  *Optional fields:*  
+    - **name**: the part of the course name;
+    - **start**: the start date to filter results;
+    - **end**: the end date to filter results;  
+  *Response*: a list of courses that meet the search criteria.
 
 ## Testing
 There are several possible ways for running tests.  
