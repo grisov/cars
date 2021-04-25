@@ -51,19 +51,19 @@ class TestDatabase(unittest.TestCase):
                 "An entry appeared in the database for the specified ID")
             self.assertEqual(db.get(id), course,
                 "The database contains an entry with specified ID that has just been added")
-            self.assertIsNone(db.get(id+1),
+            self.assertIsNone(db.get(id + 1),
                 "the next entry is missing in the database")
-            self.assertIsNone(db.get(id-1),
+            self.assertIsNone(db.get(id - 1),
                 "the previous entry is missing in the database")
 
     def test_delete_method(self) -> None:
         """Testing the method that delete an entry from the database."""
         course = Course(
-                name="Test",
-                start="2021-02-03",
-                end="2021-12-11",
-                amount=123
-            )
+            name="Test",
+            start="2021-02-03",
+            end="2021-12-11",
+            amount=123
+        )
         with Database(":memory:") as db:
             id = getattr(db.add(course), "id")
             db_course = db.get(id)
@@ -131,7 +131,7 @@ class TestDatabase(unittest.TestCase):
             self.assertEqual(len(db.search(None)), 5,
                 "Search with an empty argument returns all records in the database")
 
-            query = SearchData(name = "The Python is awesome")
+            query = SearchData(name="The Python is awesome")
             self.assertEqual(len(db.search(query)), 1,
                 "Search the database by given course name")
             self.assertEqual(db.search(query)[0].amount, 44,

@@ -7,10 +7,10 @@ from api.database import Database
 
 
 def search_get(
-        name: Optional[str]=None,
-        start: Optional[str]=None,
-        end: Optional[str]=None
-    ) -> Union[Union[List[Course], Error], Tuple]:
+    name: Optional[str] = None,
+    start: Optional[str] = None,
+    end: Optional[str] = None
+) -> Union[Union[List[Course], Error], Tuple]:
     """Searching of courses on the properties specified in URL.
     Search for a training course by name or filter the list by specified dates.
     :param name: part of the name of the training course
@@ -35,7 +35,7 @@ def search_get(
     return result
 
 
-def search_post(search_data: Optional[SearchData]=None) -> Union[Union[List[Course], Error], Tuple]:
+def search_post(search_data: Optional[SearchData] = None) -> Union[Union[List[Course], Error], Tuple]:
     """Searching of courses on the properties specified in request body.
     Search for a training course by name or filter the list by specified dates.
     :param search_data: Course name to search for or dates to filter the results

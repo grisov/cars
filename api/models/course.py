@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 from api.models.base_model import Model
 
 
@@ -7,16 +7,16 @@ class Course(Model):
     """Data structure that represents the training course."""
 
     def __init__(
-            self,
-            name: str="--",
-            start: Union[date, str]="1970-01-01",
-            end: Union[date, str]="1970-01-01",
-            amount: int=1,
-            id: int=-1
-        ) -> None:
+        self,
+        name: str = "--",
+        start: Union[date, str] = "1970-01-01",
+        end: Union[date, str] = "1970-01-01",
+        amount: int = 1,
+        id: int = -1
+    ) -> None:
         """Data model representing the training course.
-        :param n	ame: The name of the course
-        	:type name: str	
+        :param name: The name of the course
+        :type name: str
         :param start: the start date of the course
         :type start: Union[date, str]
         :param end: the graduation date of the course

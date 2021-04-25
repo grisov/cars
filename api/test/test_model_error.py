@@ -38,14 +38,14 @@ class TestErrorModel(unittest.TestCase):
             detail="The server encountered an internal error.",
             type="about:blank"
         )
-        error.status=0
+        error.status = 0
         self.assertEqual(error.status, 0,
             f"The new status of the error is `{error.status}`")
-        error.status=-123
+        error.status = -123
         self.assertEqual(error.status, -123,
             f"The new status of the error is `{error.status}`")
         with self.assertRaises(ValueError):
-            error.status=None  # None is not allowed
+            error.status = None  # None is not allowed
         self.assertIsNotNone(error.status,
             "The status of the error still contains the not empty value")
         self.assertIsInstance(error.status, int,
@@ -59,14 +59,14 @@ class TestErrorModel(unittest.TestCase):
             detail="The requested URL was not found on the server.",
             type="about:blank"
         )
-        error.title="Internal Server Error"
+        error.title = "Internal Server Error"
         self.assertEqual(error.title, "Internal Server Error",
             f"The new title of the error is `{error.title}`")
-        error.title=''
+        error.title = ''
         self.assertEqual(error.title, "",
             f"The new title of the error is `{error.title}`")
         with self.assertRaises(ValueError):
-            error.title=None  # None is not allowed
+            error.title = None  # None is not allowed
         self.assertIsNotNone(error.title,
             "The title of the error still contains the not empty value")
         self.assertIsInstance(error.title, str,

@@ -13,7 +13,7 @@ class TestGetController(BaseTestCase):
     def setUp(self) -> None:
         """Performed before each test."""
         super(TestGetController, self).setUp()
-		        # Filling the database
+        # Filling the database
         courses = [
             Course("Level one", "2021-04-04", "2023-12-22", 37),
             Course("Level two", "2022-05-05", "2024-11-19", 25),
@@ -45,7 +45,7 @@ class TestGetController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -120,8 +120,8 @@ class TestGetController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(BadRequest):
-            course = Course(**response.json)
-            error = Error(**response.json)
+            Course(**response.json)
+            Error(**response.json)
         self.assertEqual(response.data, b"", "Empty response")
 
     def test_get_using_post(self) -> None:
@@ -149,7 +149,7 @@ class TestGetController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -185,7 +185,7 @@ class TestGetController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -221,8 +221,8 @@ class TestGetController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(BadRequest):
-            course = Course(**response.json)
-            error = Error(**response.json)
+            Course(**response.json)
+            Error(**response.json)
         self.assertEqual(response.data, b"", "Empty response")
 
 

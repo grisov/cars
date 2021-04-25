@@ -36,6 +36,6 @@ class BaseTestCase(TestCase):
         self.headers = {}
         try:
             os.remove(self.dbfile)
-        except:
+        except Exception:
             pass
         self.dbfile = ''

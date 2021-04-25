@@ -32,7 +32,7 @@ def add_get(name: str, start: str, end: str, amount: int) -> Union[Union[Course,
     return record
 
 
-def add_post(course: Optional[Course]=None) -> Union[Union[Course, Error, None], Tuple]:
+def add_post(course: Optional[Course] = None) -> Union[Union[Course, Error, None], Tuple]:
     """Add new course via a request body.
     Add a new training course to the database using POST-method.
     :param course: the data describing the training course

@@ -1,1 +1,3 @@
+# Requirements for automated lint
+flake8 >= 3.9.1
 mypy >= 0.812

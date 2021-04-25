@@ -10,9 +10,9 @@ class Database(object):
     """Object-Relational Mapping class for working with SQLite3 DB."""
 
     def __init__(
-            self,
-            file: str=''
-        ) -> None:
+        self,
+        file: str = ''
+    ) -> None:
         """Create a database connection to the SQLite database.
         :param file: the SQLite database file path
         :type file: str
@@ -49,7 +49,7 @@ class Database(object):
         :return: the detailed information about training course
         :rtype: Optional[Course]
         """
-        if id is None or id<0:
+        if id is None or id < 0:
             return None
         query = "SELECT * FROM courses WHERE id=?"
         try:
@@ -78,7 +78,10 @@ class Database(object):
             return None
         query = "INSERT INTO courses (name, start, end, amount) VALUES (?,?,?,?)"
         try:
-            self._cur.execute(query, (course.name, course.start.isoformat(), course.end.isoformat(), course.amount))
+            self._cur.execute(
+                query,
+                (course.name, course.start.isoformat(), course.end.isoformat(), course.amount)
+            )
             course.id = self._cur.lastrowid or -1
             self._conn.commit()
         except sqlite3.Error as e:
@@ -120,7 +123,10 @@ class Database(object):
             return self.add(course)
         query = "UPDATE courses SET name=?, start=?, end=?, amount=? WHERE id=?"
         try:
-            self._cur.execute(query, (course.name, course.start.isoformat(), course.end.isoformat(), course.amount, id))
+            self._cur.execute(
+                query,
+                (course.name, course.start.isoformat(), course.end.isoformat(), course.amount, id)
+            )
             self._conn.commit()
         except sqlite3.Error as e:
             logger.error("Unable to update record in the database; %s", e)
@@ -128,7 +134,7 @@ class Database(object):
         course.id = id
         return course
 
-    def search(self, data: Optional[SearchData]=None) -> List[Course]:
+    def search(self, data: Optional[SearchData] = None) -> List[Course]:
         """Search for courses that match the query data.
         :param data: the search query data
         :type data: Optional[SearchData]
@@ -141,7 +147,8 @@ class Database(object):
             WHERE instr(name, ?) AND start >= ? AND end <= ?
             ORDER BY start ASC, name ASC"""
         try:
-            self._cur.execute(query, (
+            self._cur.execute(
+                query, (
                     data.name or "",
                     data.start or "1970-01-01",
                     data.end or "9999-12-31"
@@ -150,13 +157,15 @@ class Database(object):
             records = self._cur.fetchall()
         except sqlite3.Error as e:
             logger.error("Unable to retrieve the list of records from the database; %s", e)
-        return [Course(
+        return [
+            Course(
                 name=rec[1],
                 start=rec[2],
                 end=rec[3],
                 amount=rec[4],
                 id=rec[0]
-            ) for rec in records]
+            ) for rec in records
+        ]
 
     def close(self) -> None:
         """Close the database descriptors."""

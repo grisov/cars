@@ -1,5 +1,4 @@
 import unittest
-from flask import json
 from werkzeug.exceptions import BadRequest
 from api.test import BaseTestCase
 from api.models.course import Course
@@ -45,7 +44,7 @@ class TestDeleteController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -80,7 +79,7 @@ class TestDeleteController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            error = Error(**response.json)
+            Error(**response.json)
         course = Course(**response.json)
         self.assertEqual(course.name, "Level one",
         f"The name of the deleted course is `{course.name}`")
@@ -125,8 +124,8 @@ class TestDeleteController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(BadRequest):
-            course = Course(**response.json)
-            error = Error(**response.json)
+            Course(**response.json)
+            Error(**response.json)
         self.assertEqual(response.data, b"", "Empty response")
 
     def test_delete_repeatedly(self) -> None:
@@ -164,8 +163,8 @@ class TestDeleteController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(BadRequest):
-            course = Course(**response.json)
-            error = Error(**response.json)
+            Course(**response.json)
+            Error(**response.json)
         self.assertEqual(response.data, b"", "Empty response")
 
 

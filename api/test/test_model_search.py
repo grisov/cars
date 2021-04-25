@@ -50,18 +50,18 @@ class TestSearchDataModel(unittest.TestCase):
     def test_valid_name_values(self) -> None:
         """Testing the valid values of the name attribute."""
         sd = SearchData()
-        sd.name="Yalantis"
+        sd.name = "Yalantis"
         self.assertEqual(sd.name, 'Yalantis',
             f"The current name to search is `{sd.name}`")
-        sd.name=None
+        sd.name = None
         self.assertIsNone(sd.name,
             "The name to search is empty")
-        sd.name="asd"
+        sd.name = "asd"
         self.assertEqual(sd.name, 'asd',
             f"The current name to search is `{sd.name}`")
         with self.assertRaises(ValueError):
-            sd.name='x'  # len < 2 characters
-            sd.name=''  # len < 2 characters
+            sd.name = 'x'  # len < 2 characters
+            sd.name = ''  # len < 2 characters
         self.assertIsNotNone(sd.name,
             "Name for search is not empty")
         self.assertIsInstance(sd.name, (str),

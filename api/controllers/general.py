@@ -17,10 +17,10 @@ def get_details(cid: int) -> Union[Union[Course, Error, None], Tuple]:
     if course is not None:
         return course
     return Error(
-            status=204,
-            title="No Content",
-            detail=f"There is no record with index {cid} in the database"
-        ), 204
+        status=204,
+        title="No Content",
+        detail=f"There is no record with index {cid} in the database"
+    ), 204
 
 
 def remove(cid: int) -> Union[Union[Course, Error, None], Tuple]:
@@ -35,13 +35,13 @@ def remove(cid: int) -> Union[Union[Course, Error, None], Tuple]:
     if course is not None:
         return course
     return Error(
-            status=204,
-            title="No Content",
-            detail=f"There is no record with index {cid} in the database"
-        ), 204
+        status=204,
+        title="No Content",
+        detail=f"There is no record with index {cid} in the database"
+    ), 204
 
 
-def update(cid: int, course: Optional[Course]=None) -> Union[Union[Course, Error, None], Tuple]:
+def update(cid: int, course: Optional[Course] = None) -> Union[Union[Course, Error, None], Tuple]:
     """Update the properties of the training course in the DB.
     :param cid: The ID of the Training course in the database
     :type cid: int

@@ -27,11 +27,11 @@ def application() -> Flask:
                 pythonic_params=True)
     app.app.config.from_object('api.config')
     app.app.json_encoder = JSONEncoder
-    app.app.template_folder=app.app.config["TEMPLATE_FOLDER"]
-    app.app.static_folder=app.app.config["STATIC_FOLDER"]
-    app.app.static_url_path=app.app.config["STATIC_URL_PATH"]
+    app.app.template_folder = app.app.config["TEMPLATE_FOLDER"]
+    app.app.static_folder = app.app.config["STATIC_FOLDER"]
+    app.app.static_url_path = app.app.config["STATIC_URL_PATH"]
     return app.app
 
 
 app = application()
-from api.views import *
+from api.views import *  # noqa E402

@@ -57,19 +57,19 @@ class TestCourseModel(unittest.TestCase):
             end="2099-12-31",
             amount=1
         )
-        course.name="Python for beginners"
+        course.name = "Python for beginners"
         self.assertEqual(course.name, 'Python for beginners',
             f"The new name of the course is `{course.name}`")
         with self.assertRaises(ValueError):
-            course.name=None  # None is not allowed
+            course.name = None  # None is not allowed
         self.assertIsNotNone(course.name,
             "The name of the course still contains the not empty value")
-        course.name="ukr"
+        course.name = "ukr"
         self.assertEqual(course.name, 'ukr',
             f"The new name of the course is `{course.name}`")
         with self.assertRaises(ValueError):
-            course.name='x'  # less than 2 characters
-            course.name=''  # empty string
+            course.name = 'x'  # less than 2 characters
+            course.name = ''  # empty string
         self.assertIsNotNone(course.name,
             "The name of the course still contains the not empty value")
         self.assertIsInstance(course.name, (str),
@@ -94,7 +94,7 @@ class TestCourseModel(unittest.TestCase):
         self.assertEqual(course.start.day, 1,
             f"The day of the beginning of the course is {course.start.day}")
         with self.assertRaises(ValueError):
-            course.start=None  # None is not allowed
+            course.start = None  # None is not allowed
         self.assertIsNotNone(course.start,
             "The starting date of the course still contains the not empty value")
         self.assertEqual(course.start.isoformat(), "2000-01-01",
@@ -109,7 +109,7 @@ class TestCourseModel(unittest.TestCase):
         self.assertEqual(course.end.day, 31,
             f"The day of the gratuation of the course is {course.end.day}")
         with self.assertRaises(ValueError):
-            course.end=None  # None is not allowed
+            course.end = None  # None is not allowed
         self.assertIsNotNone(course.end,
             "The gratuation date of the course still contains the not empty value")
         self.assertEqual(course.end.isoformat(), "2029-12-31",
@@ -145,17 +145,17 @@ class TestCourseModel(unittest.TestCase):
         self.assertEqual(course.amount, 100,
             f"The number of course lectures is `{course.amount}`")
         with self.assertRaises(ValueError):
-            course.amount=None  # None is not allowed
-        course.amount=1
+            course.amount = None  # None is not allowed
+        course.amount = 1
         self.assertEqual(course.amount, 1,
             f"The number of course lectures is `{course.amount}`")
-        course.amount=255
+        course.amount = 255
         self.assertEqual(course.amount, 255,
             f"The number of course lectures is `{course.amount}`")
         with self.assertRaises(ValueError):
-            course.amount=0  # 0 < 1
-            course.amount=-1  # -1 < 1
-            course.amount=256  # 256 > 255
+            course.amount = 0  # 0 < 1
+            course.amount = -1  # -1 < 1
+            course.amount = 256  # 256 > 255
 
     def test_openapi_types(self) -> None:
         """Testing declared attribute types."""

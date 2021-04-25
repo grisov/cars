@@ -1,6 +1,6 @@
 from connexion.apps.flask_app import FlaskJSONEncoder
 from datetime import date, datetime
-from typing import Any, Dict, List, Union, Optional, Type
+from typing import Any, Dict, List, Union, Type
 
 
 class JSONEncoder(FlaskJSONEncoder):
@@ -79,7 +79,10 @@ class Data(object):
         """
         return self._value
 
-    def deserialize_primitive(self, target: Type[Union[int, float, str, bool, bytearray]]) -> Union[int, float, str, bool, bytearray]:
+    def deserialize_primitive(
+        self,
+        target: Type[Union[int, float, str, bool, bytearray]]
+    ) -> Union[int, float, str, bool, bytearray]:
         """Deserialize the data to the specified primitive type.
         :param target: the target data type
         :type target: Type[Union[int, float, str, bool, bytearray]]

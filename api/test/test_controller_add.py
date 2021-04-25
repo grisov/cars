@@ -1,6 +1,5 @@
 import unittest
 from flask import json
-from typing import Optional
 from api.test import BaseTestCase
 from api.models.course import Course
 from api.models.error import Error
@@ -32,7 +31,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -48,7 +47,7 @@ class TestAddController(BaseTestCase):
         self.headers["Content-Type"] = "application/json"
         response = self.client.post(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps({}),
             content_type=self.headers["Content-Type"]
         )
@@ -68,7 +67,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -142,7 +141,7 @@ class TestAddController(BaseTestCase):
         }
         response = self.client.post(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps(data),
             content_type=self.headers["Content-Type"]
         )
@@ -213,7 +212,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -240,7 +239,7 @@ class TestAddController(BaseTestCase):
         }
         response = self.client.post(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps(incomplete_data),
             content_type=self.headers["Content-Type"]
         )
@@ -260,7 +259,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -306,7 +305,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -334,7 +333,7 @@ class TestAddController(BaseTestCase):
         }
         response = self.client.post(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps(wrong_data),
             content_type=self.headers["Content-Type"]
         )
@@ -354,7 +353,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -382,7 +381,7 @@ class TestAddController(BaseTestCase):
         }
         response = self.client.put(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps(data),
             content_type=self.headers["Content-Type"]
         )
@@ -402,7 +401,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -430,7 +429,7 @@ class TestAddController(BaseTestCase):
         }
         response = self.client.patch(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps(data),
             content_type=self.headers["Content-Type"]
         )
@@ -450,7 +449,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")
@@ -478,7 +477,7 @@ class TestAddController(BaseTestCase):
         }
         response = self.client.patch(
             "/api/v1/add",
-            headers = self.headers,
+            headers=self.headers,
             data=json.dumps(data),
             content_type=self.headers["Content-Type"]
         )
@@ -498,7 +497,7 @@ class TestAddController(BaseTestCase):
 
         # Check response content
         with self.assertRaises(TypeError):
-            course = Course(**response.json)
+            Course(**response.json)
         error = Error(**response.json)
         self.assertSetEqual(set(response.json), set(("status", "title", "detail", "type")),
             f"The response attributes are `{str(list(response.json))}`")

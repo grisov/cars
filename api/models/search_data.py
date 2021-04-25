@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 from api.models.base_model import Model
 
 
@@ -7,11 +7,11 @@ class SearchData(Model):
     """Representation of the data structure for searching the course."""
 
     def __init__(
-            self,
-            name: Optional[str]=None,
-            start: Union[date, str, None]=None,
-            end: Union[date, str, None]=None
-        ) -> None:
+        self,
+        name: Optional[str] = None,
+        start: Union[date, str, None] = None,
+        end: Union[date, str, None] = None
+    ) -> None:
         """The data model defined in OpenAPI.
         :param name: The course name for searching
         :type name: Optional[str]

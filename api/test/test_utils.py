@@ -15,7 +15,7 @@ class TestDataClass(unittest.TestCase):
         self.assertEqual(data.value, 123,
             "The returned value corresponds to the original")
         with self.assertRaises(AttributeError):
-            data.value='hello'  # type: ignore
+            data.value = 'hello'  # type: ignore
 
     def test_primitive_types(self) -> None:
         data = Data(0)
@@ -138,7 +138,7 @@ class TestGenericType(unittest.TestCase):
         self.assertEqual(gt.value, bool,
             "The value of the `value` attribute")
         with self.assertRaises(AttributeError):
-            gt.value=int  # type: ignore
+            gt.value = int  # type: ignore
 
     def test_is_generic(self) -> None:
         """Testing the correctness of the definition of generic types."""
