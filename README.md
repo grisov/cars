@@ -97,14 +97,15 @@ This is the easiest and fastest way - just run the following command from the ro
 ```
 
 ### PyTest
-The following command will run the tests using the ** pytest ** tool:
+The following command will run the tests using the **pytest** tool:
 
 ```
   python -m pytest
 ```
 
 ### Running integration tests
-The ** tox ** tool allows to check the correct working of the server in different environments.  
+The [**tox** tool](https://tox.readthedocs.io)
+allows to check the correct working of the server in different environments.  
 To run a set of tests in Python versions 3.7, 3.8 and 3.9 - run the following commands:
 
 ```
@@ -112,19 +113,48 @@ To run a set of tests in Python versions 3.7, 3.8 and 3.9 - run the following co
   python -m tox
 ```
 
-## Linters
-The source code of the module meets the formatting standards PEP and has [type hints](https://mypy.readthedocs.io).
+## Linting tools
+The source code of the module meets the coding style standards PEP8 and has [type hints](https://mypy.readthedocs.io).  
+To install tools that analyzes source code to flag programming errors, bugs, stylistic errors, and suspicious constructs, run the following command:
+
+```
+  pip install -r lint-requirements.txt
+```
+
+### Flake8
+[**Flake8**](https://flake8.pycqa.org)
+is a great toolkit for checking source code base against coding style (PEP8), programming errors (like "library imported but unused" and "Undefined name") and to check cyclomatic complexity.
+To run this tool, use the following command:
+
+```
+  python -m flake8
+```
+
+If no issue is found in the source code, the command will not output anything after the scan is complete.
+
+### Type hints
+Type hinting is a formal solution to statically indicate the type of a value within Python code. It was specified in PEP 484 and introduced in Python 3.5.  
+To check the correctness of the type hints specified in the code, use the
+[MyPy tool](https://mypy.readthedocs.io)
+with the following command:
+
+```
+  python -m mypy .
+```
 
 ## Deploy in production
 To deploy the module in production, please use a WSGI server.  
-Don't forget to change the value of the variable ** api.config.SERVER_NAME **.
+Don't forget to change the value of the variable **api.config.SERVER_NAME**.
+
+for testing this Flask-server runs on domain [allmassage.pp.ua](https://allmassage.pp.ua).
 
 ## License
 This project is distributed under the General Public License version 2.
 
 ## Contacts
-The author of this project: [** Oleksandr Gryshchenko **](https://ua.linkedin.com/in/grisov).  
-You can contact the author through his [GitHub account](https://github.com/grisov).
+The author of this project: [**Oleksandr Gryshchenko**](https://ua.linkedin.com/in/grisov).  
+You can contact the author through his [GitHub account](https://github.com/grisov).  
+Curriculum vitae can be downloaded [here](https://info.alwaysdata.net/static/grisov_curriculum_vitae.pdf).
 
 ## Contributions
 Anyone can make changes to this project by creating a Pull Request [here](https://github.com/grisov/catalog_of_courses).
