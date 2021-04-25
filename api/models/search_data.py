@@ -51,7 +51,7 @@ class SearchData(Model):
         self._name = self.validate_name(name)
 
     @property
-    def start(self) -> Optional[date]:
+    def start(self):
         """Get the start date of the course for searching.
         :return: the start date of the course for searching
         :rtype: Optional[date]
@@ -67,10 +67,10 @@ class SearchData(Model):
         self._start = self.validate_date(start)
 
     @property
-    def end(self) -> Union[date, str, None]:
+    def end(self):
         """Get the graduation date of the course for searching.
         :return: the graduation date of the course for searching
-        :rtype: Union[date, str, None]
+        :rtype: Optional[date]
         """
         return self._end
 

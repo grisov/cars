@@ -1,3 +1,4 @@
+import unittest
 from flask import json
 from api.test import BaseTestCase
 from api.models.course import Course
@@ -95,10 +96,10 @@ class TestUpdateController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(id)
-        self.assertIsNotNone(course,
+            db_course = db.get(id)
+        self.assertIsNotNone(db_course,
             "An entry with the specified ID is still exist in the DB")
-        self.assertEqual(course.name, "Framework Django",
+        self.assertEqual(getattr(db_course, "name"), "Framework Django",
             "The name of the course in the DB is not changed")
 
     def test_non_exist_course_to_none(self) -> None:
@@ -173,23 +174,23 @@ class TestUpdateController(BaseTestCase):
         course = Course(**response.json)
         with Database() as db:
             db_course = db.get(id)
-        self.assertEqual(course.id, db_course.id,
+        self.assertEqual(course.id, getattr(db_course, "id"),
             f"The ID of the updated course is `{course.id}`")
-        self.assertNotEqual(course.name, old_course.name,
+        self.assertNotEqual(course.name, getattr(old_course, "name"),
             "The current course name does not match the previous data")
-        self.assertEqual(course.name, db_course.name,
+        self.assertEqual(course.name, getattr(db_course, "name"),
             f"The name of the updated course is `{course.name}`")
-        self.assertNotEqual(course.start, old_course.start,
+        self.assertNotEqual(course.start, getattr(old_course, "start"),
             "The current course start date does not match the previous data")
-        self.assertEqual(course.start, db_course.start,
+        self.assertEqual(course.start, getattr(db_course, "start"),
             f"The start date of the updated course is `{course.start}`")
-        self.assertNotEqual(course.end, old_course.end,
+        self.assertNotEqual(course.end, getattr(old_course, "end"),
             "The current course gratuation date does not match the previous data")
-        self.assertEqual(course.end, db_course.end,
+        self.assertEqual(course.end, getattr(db_course, "end"),
             f"The gratuation date of the updated course is `{course.end}`")
-        self.assertNotEqual(course.amount, old_course.amount,
+        self.assertNotEqual(course.amount, getattr(old_course, "amount"),
             "The current number of lectures does not match the previous data")
-        self.assertEqual(course.amount, db_course.amount,
+        self.assertEqual(course.amount, getattr(db_course, "amount"),
             f"Number of lectures in the updated course are `{course.amount}`")
 
     def test_non_exist_course_to_valid(self) -> None:
@@ -282,10 +283,10 @@ class TestUpdateController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(id)
-        self.assertIsNotNone(course,
+            db_course = db.get(id)
+        self.assertIsNotNone(db_course,
             "An entry with the specified ID is still exist in the DB")
-        self.assertEqual(course.name, "Machine Learning",
+        self.assertEqual(getattr(db_course, "name"), "Machine Learning",
             "The name of the course in the DB is not changed")
 
     def test_exist_course_to_wrong(self) -> None:
@@ -336,10 +337,10 @@ class TestUpdateController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(id)
-        self.assertIsNotNone(course,
+            db_course = db.get(id)
+        self.assertIsNotNone(db_course,
             "An entry with the specified ID is still exist in the DB")
-        self.assertEqual(course.name, "Python forever!",
+        self.assertEqual(getattr(db_course, "name"), "Python forever!",
             "The name of the course in the DB is not changed")
 
 

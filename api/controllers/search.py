@@ -1,5 +1,5 @@
 import connexion
-from typing import List, Union, Optional
+from typing import List, Tuple, Union, Optional
 from api.models.course import Course
 from api.models.error import Error
 from api.models.search_data import SearchData
@@ -10,7 +10,7 @@ def search_get(
         name: Optional[str]=None,
         start: Optional[str]=None,
         end: Optional[str]=None
-    ) -> Union[List[Course], Error]:
+    ) -> Union[Union[List[Course], Error], Tuple]:
     """Searching of courses on the properties specified in URL.
     Search for a training course by name or filter the list by specified dates.
     :param name: part of the name of the training course
@@ -35,7 +35,7 @@ def search_get(
     return result
 
 
-def search_post(search_data: Optional[SearchData]=None) -> Union[List[Course], Error]:
+def search_post(search_data: Optional[SearchData]=None) -> Union[Union[List[Course], Error], Tuple]:
     """Searching of courses on the properties specified in request body.
     Search for a training course by name or filter the list by specified dates.
     :param search_data: Course name to search for or dates to filter the results

@@ -1,5 +1,6 @@
 import os.path
 import connexion
+from flask.app import Flask
 import logging
 from logging.handlers import RotatingFileHandler
 from api.utils import JSONEncoder
@@ -15,7 +16,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def application() -> connexion.FlaskApp:
+def application() -> Flask:
     """Create Flask application.
     :return: the configured instance of the Flask application
     :rtype: connexion.FlaskApp

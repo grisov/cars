@@ -79,15 +79,15 @@ class Data(object):
         """
         return self._value
 
-    def deserialize_primitive(self, target: Union[int, float, str, bool, bytearray]) -> Union[int, float, str, bool, bytearray]:
+    def deserialize_primitive(self, target: Type[Union[int, float, str, bool, bytearray]]) -> Union[int, float, str, bool, bytearray]:
         """Deserialize the data to the specified primitive type.
         :param target: the target data type
-        :type target: Union[int, float, str, bool, bytearray]
+        :type target: Type[Union[int, float, str, bool, bytearray]]
         :return: the data that converted to the specified type
         :rtype: Union[int, float, str, bool, bytearray]
         """
         try:
-            value = target(self.value)
+            value = target(self.value)  # type: ignore
         except UnicodeEncodeError:
             import six
             value = six.u(self.value)
@@ -125,12 +125,12 @@ class Data(object):
         except (ValueError, TypeError):
             return self.value
 
-    def deserialize(self, target: object) -> Optional[object]:
+    def deserialize(self, target: Any) -> Any:
         """Try to deserialize any type into an object.
         :param target: the target data type
-        :type target: object
+        :type target: Any
         :return: deserialized data
-        :rtype: Optional[object]
+        :rtype: Any
         """
         if self.value is None:
             return None
@@ -147,8 +147,7 @@ class Data(object):
                 return self.deserialize_list(target.__args__[0])
             if GenericType(target).is_dict():
                 return self.deserialize_dict(target.__args__[1])
-        else:
-            return self.deserialize_model(target)
+        return self.deserialize_model(target)
 
     def deserialize_model(self, target: object) -> Union[Dict, List]:
         """Deserialize data model to list or dict.
@@ -157,7 +156,7 @@ class Data(object):
         :return: deserialized data model
         :rtype: Union[Dict, List]
         """
-        instance = target()
+        instance = target()  # type: ignore
         if not instance.openapi_types:
             return self.value
         for attr, attr_type in instance.openapi_types.items():

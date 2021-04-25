@@ -27,7 +27,7 @@ class TestDatabase(unittest.TestCase):
     def test_get_and_add(self) -> None:
         """Testing the get and add methods."""
         with Database(":memory:") as db:
-            self.assertIsNone(db.get(None),
+            self.assertIsNone(db.get(None),  # type: ignore
                 "Always return None value if ID is None")
             self.assertIsNone(db.get(0),
                 "Always return None value if ID==0")
@@ -46,7 +46,7 @@ class TestDatabase(unittest.TestCase):
             )
             self.assertIsInstance(course, Course,
                 "An instance of the Course class is returned after successfull adding")
-            id = course.id
+            id = getattr(course, "id")
             self.assertIsInstance(db.get(id), Course,
                 "An entry appeared in the database for the specified ID")
             self.assertEqual(db.get(id), course,
@@ -65,9 +65,9 @@ class TestDatabase(unittest.TestCase):
                 amount=123
             )
         with Database(":memory:") as db:
-            id = db.add(course).id
+            id = getattr(db.add(course), "id")
             db_course = db.get(id)
-            self.assertEqual(db_course.name, "Test",
+            self.assertEqual(getattr(db_course, "name"), "Test",
                 "The name of the course in the DB coincides with the name of the added course")
             rm_course = db.remove(id)
             self.assertEqual(rm_course, db_course,
@@ -84,15 +84,15 @@ class TestDatabase(unittest.TestCase):
             amount=179
         )
         with Database(":memory:") as db:
-            id = db.add(course1).id
+            id = getattr(db.add(course1), "id")
             course2 = db.get(id)
             self.assertEqual(course2, course1,
                 "The entry in the database is the same as previously added")
             # Changing course data
-            course2.name = "Python is awesome!"
-            course2.start = "2021-01-01"
-            course2.end = "2021-12-31"
-            course2.amount = 11
+            setattr(course2, "name", "Python is awesome!")
+            setattr(course2, "start", "2021-01-01")
+            setattr(course2, "end", "2021-12-31")
+            setattr(course2, "amount", 11)
             course = db.update(id, course2)
             self.assertNotEqual(course, course1,
                 "The data of the changed course differ from the previous")
@@ -105,9 +105,9 @@ class TestDatabase(unittest.TestCase):
         with Database(":memory:") as db:
             self.assertIsNone(db.update(-1, course),
                 "Do nothing for negative ID values")
-            self.assertIsNone(db.update(None, course),
+            self.assertIsNone(db.update(None, course),  # type: ignore
                 "Do nothing for ID is None")
-            self.assertIsNone(db.update(None, None),
+            self.assertIsNone(db.update(None, None),  # type: ignore
                 "Do nothing if empty ID value and new data")
             self.assertIsNone(db.update(-5, None),
                 "Do nothing if the values are negative or empty")

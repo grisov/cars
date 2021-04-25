@@ -1,17 +1,17 @@
 from __future__ import annotations
 from datetime import date
-from typing import Dict, Union, Optional
+from typing import Any, Dict, Union, Optional, Type
 from api.utils import Data
 
 
 class Model(object):
     # openapiTypes: The key is attribute name
     # and the value is attribute type.
-    openapi_types = {}
+    openapi_types: Dict[str, Type] = {}
 
     # attributeMap: The key is attribute name
     # and the value is json key in definition.
-    attribute_map = {}
+    attribute_map: Dict[str, str] = {}
 
     @classmethod
     def from_dict(cls, dikt: Dict):
@@ -23,12 +23,12 @@ class Model(object):
         """
         return Data(dikt).deserialize_model(cls)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
         """Return the model properties as a dict.
         :return: presentation of the data model in the dict form
-        :rtype: Dict
+        :rtype: Dict[str, Any]
         """
-        result = {}
+        result: Dict[str, Any] = {}
         for attr in self.openapi_types:
             value = getattr(self, attr)
             if value is None:
@@ -64,7 +64,7 @@ class Model(object):
         """
         return self.to_str()
 
-    def __eq__(self, other: Model) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Return true if both objects are equal.
         :param other: another Model object
         :type other: Model
@@ -73,7 +73,7 @@ class Model(object):
         """
         return self.__dict__ == other.__dict__
 
-    def __ne__(self, other: Model) -> bool:
+    def __ne__(self, other: object) -> bool:
         """Return true if both objects are not equal.
         :param other: another Model object
         :type other: Model
@@ -97,12 +97,12 @@ class Model(object):
         return name
 
     @staticmethod
-    def validate_date(dt: Union[date, str, None]) -> Optional[date]:
+    def validate_date(dt: Union[date, str, None]) -> Union[date, str, None]:
         """Validation of the passed value for the date.
         :param dt: the date
         :type dt: Union[date, str, None]
         :return: the validated value of the date
-        :rtype: Optional[date]
+        :rtype: Union[date, str, None]
         """
         if dt is not None and isinstance(dt, str):
             dt = Data(dt).deserialize(date)

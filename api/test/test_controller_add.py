@@ -1,4 +1,6 @@
+import unittest
 from flask import json
+from typing import Optional
 from api.test import BaseTestCase
 from api.models.course import Course
 from api.models.error import Error
@@ -120,13 +122,13 @@ class TestAddController(BaseTestCase):
         # Check database
         with Database() as db:
             db_course = db.get(1)
-        self.assertEqual(db_course.name, course.name,
+        self.assertEqual(getattr(db_course, "name"), course.name,
             "The name of the added course and the data in the DB are same")
-        self.assertEqual(db_course.start, course.start,
+        self.assertEqual(getattr(db_course, "start"), course.start,
             "The start date of the added course and the data in the DB are same")
-        self.assertEqual(db_course.end, course.end,
+        self.assertEqual(getattr(db_course, "end"), course.end,
             "The end date of the added course and the data in the DB are same")
-        self.assertEqual(db_course.amount, course.amount,
+        self.assertEqual(getattr(db_course, "amount"), course.amount,
             "The number of lectures of the added course and the data in the DB are same")
 
     def test_post_with_valid_data(self) -> None:
@@ -174,13 +176,13 @@ class TestAddController(BaseTestCase):
         # Check database
         with Database() as db:
             db_course = db.get(1)
-        self.assertEqual(db_course.name, course.name,
+        self.assertEqual(getattr(db_course, "name"), course.name,
             "The name of the added course and the data in the DB are same")
-        self.assertEqual(db_course.start, course.start,
+        self.assertEqual(getattr(db_course, "start"), course.start,
             "The start date of the added course and the data in the DB are same")
-        self.assertEqual(db_course.end, course.end,
+        self.assertEqual(getattr(db_course, "end"), course.end,
             "The end date of the added course and the data in the DB are same")
-        self.assertEqual(db_course.amount, course.amount,
+        self.assertEqual(getattr(db_course, "amount"), course.amount,
             "The number of lectures of the added course and the data in the DB are same")
 
     def test_get_with_incomplete_data(self) -> None:
@@ -224,8 +226,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
     def test_post_with_incomplete_data(self) -> None:
@@ -271,8 +273,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
     def test_get_with_wrong_data(self) -> None:
@@ -317,8 +319,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
     def test_post_with_wrong_data(self) -> None:
@@ -365,8 +367,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
     def test_put_method(self) -> None:
@@ -413,8 +415,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
     def test_patch_method(self) -> None:
@@ -461,8 +463,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
     def test_delete_method(self) -> None:
@@ -509,8 +511,8 @@ class TestAddController(BaseTestCase):
 
         # Check database
         with Database() as db:
-            course = db.get(1)
-        self.assertIsNone(course,
+            db_course = db.get(1)
+        self.assertIsNone(db_course,
             "Nothing was added to the empty database")
 
 

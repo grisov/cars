@@ -3,7 +3,7 @@ from markdown import markdown
 from api import app
 
 
-@app.route('/')
+@app.route('/')  # type: ignore
 def index():
     """Generate and render index page."""
     try:

@@ -1,3 +1,4 @@
+import unittest
 from flask import json
 from werkzeug.exceptions import BadRequest
 from api.test import BaseTestCase

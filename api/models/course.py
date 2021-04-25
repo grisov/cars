@@ -47,7 +47,7 @@ class Course(Model):
         self.id = id
 
     @property
-    def name(self) -> str:
+    def name(self):
         """Get the name of this training course.
         :return: The name of the course.
         :rtype: str
@@ -65,7 +65,7 @@ class Course(Model):
         self._name = self.validate_name(name)
 
     @property
-    def start(self) -> date:
+    def start(self):
         """Get the start date of the course.
         :return: The start date of the course.
         :rtype: date
@@ -83,7 +83,7 @@ class Course(Model):
         self._start = self.validate_date(start)
 
     @property
-    def end(self) -> date:
+    def end(self):
         """Get the graduation date of the course.
         :return: The graduation date of the course
         :rtype: date
@@ -104,7 +104,7 @@ class Course(Model):
         self._end = dt
 
     @property
-    def amount(self) -> int:
+    def amount(self):
         """Get the number of lectures in the training course.
         :return: the number of lectures that make up the course
         :rtype: int

@@ -65,7 +65,7 @@ class Database(object):
                 amount=record[4],
                 id=record[0]
             )
-        return
+        return None
 
     def add(self, course: Optional[Course]) -> Optional[Course]:
         """Add a training course to the database.
@@ -75,7 +75,7 @@ class Database(object):
         :rtype: Optional[Course]
         """
         if course is None:
-            return
+            return None
         query = "INSERT INTO courses (name, start, end, amount) VALUES (?,?,?,?)"
         try:
             self._cur.execute(query, (course.name, course.start.isoformat(), course.end.isoformat(), course.amount))
@@ -83,7 +83,7 @@ class Database(object):
             self._conn.commit()
         except sqlite3.Error as e:
             logger.error("Unable to add entry to the database; %s", e)
-            return
+            return None
         return course
 
     def remove(self, id: int) -> Optional[Course]:
@@ -94,7 +94,7 @@ class Database(object):
         :rtype: Optional[Course]
         """
         if id <= 0:
-            return
+            return None
         query = "DELETE FROM courses WHERE id=?"
         course = self.get(id)
         try:
@@ -102,7 +102,7 @@ class Database(object):
             self._conn.commit()
         except sqlite3.Error as e:
             logger.error("Unable to delete entry from the database; %s", e)
-            return
+            return None
         return course
 
     def update(self, id: int, course: Optional[Course]) -> Optional[Course]:
@@ -115,7 +115,7 @@ class Database(object):
         :rtype: Optional[Course]
         """
         if id is None or id <= 0 or course is None:
-            return
+            return None
         if self.get(id) is None:
             return self.add(course)
         query = "UPDATE courses SET name=?, start=?, end=?, amount=? WHERE id=?"
@@ -124,7 +124,7 @@ class Database(object):
             self._conn.commit()
         except sqlite3.Error as e:
             logger.error("Unable to update record in the database; %s", e)
-            return
+            return None
         course.id = id
         return course
 
@@ -171,3 +171,4 @@ class Database(object):
     def __exit__(self, type, value, traceback) -> Optional[bool]:
         """Always called when exiting from the context manager."""
         self.close()
+        return None

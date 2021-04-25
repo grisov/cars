@@ -1,5 +1,5 @@
 import unittest
-from typing import Dict, List, Union
+from typing import Collection, Dict, List, Union
 from datetime import date, datetime
 from api.utils import GenericType, Data
 
@@ -15,7 +15,7 @@ class TestDataClass(unittest.TestCase):
         self.assertEqual(data.value, 123,
             "The returned value corresponds to the original")
         with self.assertRaises(AttributeError):
-            data.value='hello'
+            data.value='hello'  # type: ignore
 
     def test_primitive_types(self) -> None:
         data = Data(0)
@@ -64,13 +64,13 @@ class TestDataClass(unittest.TestCase):
             "Date object is not empty")
         self.assertIsInstance(dt, date,
             "Check of the object type")
-        self.assertEqual(dt.year, 2037,
+        self.assertEqual(getattr(dt, "year"), 2037,
             "The value of the year from the date object")
-        self.assertEqual(dt.month, 7,
+        self.assertEqual(getattr(dt, "month"), 7,
             "The value of the month from the date object")
-        self.assertEqual(dt.day, 1,
+        self.assertEqual(getattr(dt, "day"), 1,
             "The value of the day from the date object")
-        self.assertEqual(dt.isoformat(), "2037-07-01",
+        self.assertEqual(getattr(dt, "isoformat")(), "2037-07-01",
             "Show the date in ISO format")
 
     def test_deserialize_date_noniso(self) -> None:
@@ -90,17 +90,17 @@ class TestDataClass(unittest.TestCase):
             "Datetime object is not empty")
         self.assertIsInstance(dt, datetime,
             "Check of the object type")
-        self.assertEqual(dt.year, 2021,
+        self.assertEqual(getattr(dt, "year"), 2021,
             "The value of the year from the datetime object")
-        self.assertEqual(dt.month, 11,
+        self.assertEqual(getattr(dt, "month"), 11,
             "The value of the month from the datetime object")
-        self.assertEqual(dt.day, 23,
+        self.assertEqual(getattr(dt, "day"), 23,
             "The value of the day from the datetime object")
-        self.assertEqual(dt.hour, 17,
+        self.assertEqual(getattr(dt, "hour"), 17,
             "The value of the hour from the datetime object")
-        self.assertEqual(dt.minute, 25,
+        self.assertEqual(getattr(dt, "minute"), 25,
             "The value of the minute from the datetime object")
-        self.assertEqual(dt.second, 47,
+        self.assertEqual(getattr(dt, "second"), 47,
             "The value of the second from the datetime object")
 
     def test_deserialize_datetime_noniso(self) -> None:
@@ -132,20 +132,22 @@ class TestGenericType(unittest.TestCase):
 
     def test_getter(self) -> None:
         """Testing the getter method."""
-        gt = GenericType(Union)
+        gt = GenericType(bool)
         self.assertIsNotNone(gt.value,
             "The `value` attribute is not empty")
-        self.assertEqual(gt.value, Union,
+        self.assertEqual(gt.value, bool,
             "The value of the `value` attribute")
         with self.assertRaises(AttributeError):
-            gt.value=int
+            gt.value=int  # type: ignore
 
     def test_is_generic(self) -> None:
         """Testing the correctness of the definition of generic types."""
         self.assertTrue(GenericType(List).is_generic(),
             "The type `List` is generic")
-        self.assertFalse(GenericType(Union).is_generic(),
-            "The type `Union` is not generic")
+        self.assertTrue(GenericType(Collection).is_generic(),
+            "The type `Collection` is generic")
+        self.assertFalse(GenericType(bytes).is_generic(),
+            "The type `bytes` is not generic")
         self.assertFalse(GenericType(str).is_generic(),
             "The type `str` is not generic")
         self.assertFalse(GenericType(object).is_generic(),
