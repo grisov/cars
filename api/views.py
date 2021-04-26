@@ -20,3 +20,20 @@ def index():
         title="Simple REST API for Yalantis",
         content=content or "No Content"
     )
+
+
+@app.route('/index')  # type: ignore
+def view():
+    """View all database contents."""
+    from api.database import Database
+    courses = []
+    try:
+        with Database() as db:
+            courses = db.search()
+    except Exception as e:
+        logger.error("Unable to retrieve data from database: %s", e)
+    return render_template(
+        "view.html",
+        title="List of all available courses",
+        context={"courses": sorted(courses, key=lambda x: x.id)}
+    )

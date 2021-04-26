@@ -40,10 +40,13 @@ This ReadMe document can also be found at the following address:
   http://localhost:5000/
 ```
 
-## Examples
-In the "examples/" directory you will find examples of queries to various API endpoints using Python.
+The contents of the database you can view here:
 
-## Endpoints
+```
+  http://localhost:5000/index
+```
+
+### Endpoints
 This API provides the following endpoints:
 
 1. Add course to the database.  
@@ -80,6 +83,9 @@ This API provides the following endpoints:
     - **start**: the start date to filter results;
     - **end**: the end date to filter results;  
   *Response*: a list of courses that meet the search criteria.
+
+### Examples
+In the "examples/" directory you will find examples of queries to various API endpoints using Python.
 
 ## Testing
 There are several possible ways for running tests.  
