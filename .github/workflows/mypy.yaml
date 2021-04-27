@@ -1,0 +1,62 @@
+name: Check type hints using MyPy
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+on:
+  pull_request:
+  pull_request_target:
+  push:
+    branches:
+    - master
+
+jobs:
+  check_type_hints:
+    name: Check type hints
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r lint-requirements.txt
+
+    - name: Check with MyPy
+      id: mypy
+      run: echo -e "::set-output name=result::$(mypy .)"
+
+    - name: Comment on push
+      uses: peter-evans/commit-comment@v1
+      # https://github.com/peter-evans/commit-comment
+      if: ${{ (failure() || contains(steps.mypy.outputs.result, 'error')) && github.event_name=='push' }}
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+          This ${{ github.event_name }} introduces MyPy errors.  
+          Output of checking results:  
+          ${{ join(steps.mypy.outputs.result, '\n  ') }}
+  
+    - name: Comment on pull request
+      uses: actions/github-script@v4
+      # https://github.com/actions/github-script
+      if: ${{ (failure() || contains(steps.mypy.outputs.result, 'error')) && github.event_name!='push' }}
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: |
+              This ${{ github.event_name }} introduces MyPy errors.  
+              Output of checking results:  
+              ${{ join(steps.mypy.outputs.result, '\n  ') }}
+          })
