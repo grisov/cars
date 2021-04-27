@@ -1,0 +1,64 @@
+name: Run integration tests
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+on:
+  pull_request:
+  pull_request_target:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    name: Run a set of tests in different environments
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        platform: [macos-latest, windows-latest, ubuntu-latest]
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox tox-gh-actions
+
+    - name: Test with Tox
+      env:
+        PLATFORM: ${{ matrix.platform }}
+      run: tox
+
+    - name: Comment on push
+      uses: peter-evans/commit-comment@v1
+      # https://github.com/peter-evans/commit-comment
+      if: ${{ failure() && github.event_name=='push' }}
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+          This ${{ github.event_name }} introduces errors while running tests in Python ${{ matrix.python-version }} environment on ${{ matrix.platform }} platform.
+  
+    - name: Comment on pull request
+      uses: actions/github-script@v4
+      # https://github.com/actions/github-script
+      if: ${{ failure() && github.event_name!='push' }}
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: |
+              This ${{ github.event_name }} introduces errors while running tests in Python ${{ matrix.python-version }} environment on ${{ matrix.platform }} platform.
+          })
