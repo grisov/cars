@@ -149,11 +149,12 @@ with the following command:
 ```
 
 ## GitHub Actions
-There are several customized workflows in the project repository which are triggered in response to "push" and "pull request" events:  
-* checking source code against coding style PEP8 using flake8;
-* checking type hints using MyPy;
-* checking that files do not have extended ascii or utf boms symbols;
-* running all tests in Python 3.7, 3.8 and 3.9 environments on latest Ubuntu, Windows and MacOS platforms.
+There are several customized workflows in the project repository which are triggered in response to "push" and "pull request" events:
+
+- checking source code against coding style PEP8 using flake8;
+- checking type hints using MyPy;
+- checking that files do not have extended ascii or utf boms symbols;
+- running all tests in Python 3.7, 3.8 and 3.9 environments on latest Ubuntu, Windows and MacOS platforms.
 
 ## Deploy in production
 To deploy the module in production, please use a WSGI server.  
