@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+
+  backend:
+    image: backend:latest
+    env_file:
+      - ./.env
+    networks:
+      external:
+    volumes:
+      - backapp:/c/dev/cars/backend/app
+    build:
+      context: ./backend
+      dockerfile: .dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+    ports:
+      - "8000:8000"
+
+volumes:
+  backapp:
+
+networks:
+  external:
+    # Allow setting it to false for testing
+    external: false
+    driver: bridge
