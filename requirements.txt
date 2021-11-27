@@ -1,0 +1,7 @@
+# You don't need to install all the necessary dependencies manually.
+# All needed components will be automatically installed inside the docker container.
+# Just build and up docker-compose.
+# To view list of the required modules please open "backend/app/pyproject.toml" file.
+# This "pyproject.toml" file contains several sections:
+# - [tool.poetry.dev-dependencies]: all listed here tools will only be installed in developer mode (when the environment variable INSTALL_DEV==True);
+# - [tool.poetry.dependencies]: these dependencies will be installed in any case.
