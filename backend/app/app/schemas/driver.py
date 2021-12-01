@@ -1,4 +1,3 @@
-from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -7,8 +6,9 @@ class DriverBase(BaseModel):
     """Basic information about the driver."""
     first_name: str
     last_name: str
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+
+    class Config:
+        min_anystr_length = 1
 
 
 class DriverCreate(DriverBase):
@@ -24,3 +24,10 @@ class DriverUpdate(DriverBase):
 class DriverDatabase(DriverBase):
     """Driver information obtained from the database."""
     id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: datetime.strftime(dt, "%d/%m/%Y %H:%M:%S")
+        }
