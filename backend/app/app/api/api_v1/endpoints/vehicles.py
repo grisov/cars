@@ -47,3 +47,19 @@ def get_vehicle_by_id(
             detail=f"Vehicle with ID={vehicle_id} is not found in the database"
         )
     return schemas.VehicleDatabase(**jsonable_encoder(vehicle))
+
+
+@router.post("/vehicle/", response_model=schemas.VehicleDatabase)
+def add_vehicle_to_db(
+    vehicle_in: schemas.VehicleCreate,
+    *,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    try:
+        vehicle = crud.vehicle.create(db, obj_in=vehicle_in)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    return schemas.VehicleDatabase(**jsonable_encoder(vehicle))
