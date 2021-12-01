@@ -47,3 +47,19 @@ def get_driver_by_id(
             detail=f"Driver with ID={driver_id} is not found in the database"
         )
     return schemas.DriverDatabase(**jsonable_encoder(driver))
+
+
+@router.post("/driver/", response_model=schemas.DriverDatabase)
+def add_driver_to_db(
+    driver_in: schemas.DriverCreate,
+    *,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    try:
+        driver = crud.driver.create(db, obj_in=driver_in)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    return schemas.DriverDatabase(**jsonable_encoder(driver))
