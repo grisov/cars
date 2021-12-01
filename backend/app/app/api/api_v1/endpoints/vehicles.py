@@ -63,3 +63,32 @@ def add_vehicle(
             detail="Unable to connect to the database: %s" % str(e)
         )
     return schemas.VehicleDatabase(**jsonable_encoder(vehicle))
+
+
+@router.patch("/vehicle/{vehicle_id}/", response_model=schemas.VehicleDatabase)
+def update_vehicle(
+    vehicle_id: int,
+    vehicle_in: schemas.VehicleUpdate,
+    *,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    try:
+        vehicle = crud.vehicle.get(db, id=vehicle_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    if not vehicle:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Vehicle with ID={vehicle_id} is not found in the database"
+        )
+    try:
+        updated_vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in=vehicle_in)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    return schemas.VehicleDatabase(**jsonable_encoder(updated_vehicle))

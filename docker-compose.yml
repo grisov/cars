@@ -16,7 +16,7 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
     ports:
-      - "8000:8000"
+      - "80:80"
 
 volumes:
   backapp:
