@@ -50,7 +50,7 @@ def get_vehicle_by_id(
 
 
 @router.post("/vehicle/", response_model=schemas.VehicleDatabase)
-def add_vehicle_to_db(
+def add_vehicle(
     vehicle_in: schemas.VehicleCreate,
     *,
     db: Session = Depends(deps.get_db)
