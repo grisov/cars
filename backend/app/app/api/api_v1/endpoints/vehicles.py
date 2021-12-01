@@ -26,3 +26,24 @@ def get_all_vehicles(
             detail="There are no vehicles in the database"
         )
     return [schemas.VehicleDatabase(**jsonable_encoder(vehicle)) for vehicle in vehicles]
+
+
+@router.get("/vehicle/{vehicle_id}/", response_model=schemas.VehicleDatabase)
+def get_vehicle_by_id(
+    vehicle_id: int,
+    *,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    try:
+        vehicle = crud.vehicle.get(db, id=vehicle_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    if not vehicle:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Vehicle with ID={vehicle_id} is not found in the database"
+        )
+    return schemas.VehicleDatabase(**jsonable_encoder(vehicle))
