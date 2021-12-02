@@ -20,6 +20,7 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     PROJECT_NAME: str
+    VERSION: str
 
     class Config:
         case_sensitive = True
