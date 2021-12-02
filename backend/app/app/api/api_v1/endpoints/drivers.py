@@ -1,6 +1,7 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.encoders import jsonable_encoder
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.api import deps
@@ -13,18 +14,21 @@ router = APIRouter()
     response_model=List[schemas.DriverDatabase],
     summary="",
     description="")
-def get_all_drivers(
-    a: schemas.CreatedAt = Depends(),
+def get_drivers(
+    created_at__gte: Optional[str] = Query(default=None, regex="^\d{1,2}-\d{1,2}-\d{4}$", title="Start date"),
+    created_at__lte: Optional[str] = Query(default=None, regex="^\d{1,2}-\d{1,2}-\d{4}$", title="End date"),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    if a.asd:
+    try:
+        created_at = schemas.CreatedAt(gte=created_at__gte, lte=created_at__lte)
+    except (ValueError, ValidationError) as ve:
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Haha! Thats it! %s" % str(a.asd)
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="The date must be in DD-MM-YYYY format: %s" % str(ve)
         )
     try:
-        drivers = crud.driver.get_multi(db, limit=crud.driver.count(db))
+        drivers = crud.driver.get_filtered(db, gte=created_at.gte, lte=created_at.lte)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -33,7 +37,7 @@ def get_all_drivers(
     if not drivers:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="There are no drivers in the database"
+            detail="There are no drivers in the database that meet the specified criteria."
         )
     return [schemas.DriverDatabase(**jsonable_encoder(driver)) for driver in drivers]
 

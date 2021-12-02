@@ -36,8 +36,8 @@ class DriverDatabase(DriverBase):
 
 class CreatedAt(BaseModel):
     """Query parameters for filtering drivers by registration dates."""
-    created_at__gte: Optional[date] = None
-    created_at__lte: Optional[date] = None
+    gte: Optional[date] = None
+    lte: Optional[date] = None
 
     @validator('*', pre=True)
     def validate_input_date_format(cls, value):
