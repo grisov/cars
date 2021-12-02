@@ -92,3 +92,24 @@ def update_driver(
             detail="Unable to connect to the database: %s" % str(e)
         )
     return schemas.DriverDatabase(**jsonable_encoder(updated_driver))
+
+
+@router.delete("/driver/{driver_id}/", response_model=schemas.DriverDatabase)
+def delete_driver(
+    driver_id: int,
+    *,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    try:
+        driver = crud.driver.remove(db, id=driver_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    if not driver:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Driver with ID={driver_id} is not found in the database"
+        )
+    return schemas.DriverDatabase(**jsonable_encoder(driver))
