@@ -83,8 +83,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> ModelType:
         """Delete the object from the database."""
         obj = db.query(self.model).get(id)
-        db.delete(obj)
-        db.commit()
+        if obj is not None:
+            db.delete(obj)
+            db.commit()
         return obj
 
     def count(
