@@ -1,5 +1,6 @@
-from datetime import datetime
-from pydantic import BaseModel
+from typing import Optional
+from datetime import date, datetime
+from pydantic import BaseModel, PositiveInt, validator
 
 
 class DriverBase(BaseModel):
@@ -23,7 +24,7 @@ class DriverUpdate(DriverBase):
 
 class DriverDatabase(DriverBase):
     """Driver information obtained from the database."""
-    id: int
+    id: PositiveInt
     created_at: datetime
     updated_at: datetime
 
@@ -31,3 +32,15 @@ class DriverDatabase(DriverBase):
         json_encoders = {
             datetime: lambda dt: datetime.strftime(dt, "%d/%m/%Y %H:%M:%S")
         }
+
+
+class CreatedAt(BaseModel):
+    """Query parameters for filtering drivers by registration dates."""
+    created_at__gte: Optional[date] = None
+    created_at__lte: Optional[date] = None
+
+    @validator('*', pre=True)
+    def validate_input_date_format(cls, value):
+        if value is None:
+            return value
+        return datetime.strptime(value, "%d-%m-%Y").date()

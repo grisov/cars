@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, constr, PositiveInt
 
 
 class VehicleBase(BaseModel):
@@ -17,13 +17,13 @@ class VehicleCreate(VehicleBase):
 
 class VehicleUpdate(VehicleBase):
     """Used when updating the information about the vehicle in the database."""
-    driver_id: Optional[int]
+    driver_id: Optional[PositiveInt]
 
 
 class VehicleDatabase(VehicleBase):
     """Vehicle information obtained from the database."""
-    id: int
-    driver_id: Optional[int]
+    id: PositiveInt
+    driver_id: Optional[PositiveInt]
     created_at: datetime
     updated_at: datetime
 

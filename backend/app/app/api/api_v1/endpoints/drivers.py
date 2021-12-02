@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -8,11 +8,21 @@ from app.api import deps
 router = APIRouter()
 
 
-@router.get("/driver/", response_model=List[schemas.DriverDatabase])
+@router.get(
+    path="/driver/",
+    response_model=List[schemas.DriverDatabase],
+    summary="",
+    description="")
 def get_all_drivers(
+    a: schemas.CreatedAt = Depends(),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
+    if a.asd:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Haha! Thats it! %s" % str(a.asd)
+        )
     try:
         drivers = crud.driver.get_multi(db, limit=crud.driver.count(db))
     except Exception as e:
