@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -8,13 +8,21 @@ from app.api import deps
 router = APIRouter()
 
 
-@router.get("/vehicle/", response_model=List[schemas.VehicleDatabase])
-def get_all_vehicles(
+@router.get(
+    path="/vehicle/",
+    response_model=List[schemas.VehicleDatabase],
+    summary="Get vehicles list",
+    description="The list of vehicles can be filtered based on the presence or absence of the driver")
+def get_vehicles(
+    with_drivers: Optional[Literal["yes", "no"]] = None,
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
+    """Get a filtered list of the vehicles.
+    :param with_drivers: a sign of the presence or absence of a driver in the vehicle
+    """
     try:
-        vehicles = crud.vehicle.get_multi(db, limit=crud.vehicle.count(db))
+        vehicles = crud.vehicle.get_filtered(db, with_driver=with_drivers)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -23,7 +31,7 @@ def get_all_vehicles(
     if not vehicles:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="There are no vehicles in the database"
+            detail="There are no vehicles in the database that meet the specified criteria"
         )
     return [schemas.VehicleDatabase(**jsonable_encoder(vehicle)) for vehicle in vehicles]
 
