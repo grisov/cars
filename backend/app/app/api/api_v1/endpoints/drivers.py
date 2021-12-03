@@ -1,5 +1,5 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Path, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import PositiveInt, ValidationError
 from sqlalchemy.orm import Session
@@ -14,7 +14,7 @@ router = APIRouter()
     response_model=List[schemas.DriverDatabase],
     summary="Get the list of drivers from the database",
     description="The list of drivers can be filtered by registration date")
-def get_drivers(
+async def get_drivers(
     created_at__gte: Optional[str] = Query(default=None, regex="^\d{1,2}-\d{1,2}-\d{4}$", title="Start date"),
     created_at__lte: Optional[str] = Query(default=None, regex="^\d{1,2}-\d{1,2}-\d{4}$", title="End date"),
     *,
@@ -51,8 +51,8 @@ def get_drivers(
     response_model=schemas.DriverDatabase,
     summary="Detailed information about the driver",
     description="Get complete information about the driver by his ID from the database")
-def get_driver_by_id(
-    driver_id: PositiveInt,
+async def get_driver_by_id(
+    driver_id: PositiveInt = Path(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -79,8 +79,8 @@ def get_driver_by_id(
     response_model=schemas.DriverDatabase,
     summary="Add new driver",
     description="Create a new driver in the database")
-def add_driver(
-    driver_in: schemas.DriverCreate,
+async def add_driver(
+    driver_in: schemas.DriverCreate = Body(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -102,9 +102,9 @@ def add_driver(
     response_model=schemas.DriverDatabase,
     summary="Update driver information",
     description="Update driver details with specified ID")
-def update_driver(
-    driver_id: PositiveInt,
-    driver_in: schemas.DriverUpdate,
+async def update_driver(
+    driver_id: PositiveInt = Path(..., title=""),
+    driver_in: schemas.DriverUpdate = Body(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -139,8 +139,8 @@ def update_driver(
     response_model=schemas.DriverDatabase,
     summary="Delete the driver",
     description="Remove the driver with the specified ID from the database")
-def delete_driver(
-    driver_id: int,
+async def delete_driver(
+    driver_id: PositiveInt = Path(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:

@@ -1,5 +1,5 @@
 from typing import Any, List, Literal, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Path, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
@@ -14,8 +14,8 @@ router = APIRouter()
     response_model=List[schemas.VehicleDatabase],
     summary="Get vehicles list",
     description="The list of vehicles can be filtered based on the presence or absence of the driver")
-def get_vehicles(
-    with_drivers: Optional[Literal["yes", "no"]] = None,
+async def get_vehicles(
+    with_drivers: Optional[Literal["yes", "no"]] = Query(None, title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -42,8 +42,8 @@ def get_vehicles(
     response_model=schemas.VehicleDatabase,
     summary="Vehicle information",
     description="Get detailed information about a particular vehicle by its ID")
-def get_vehicle_by_id(
-    vehicle_id: PositiveInt,
+async def get_vehicle_by_id(
+    vehicle_id: PositiveInt = Path(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -70,8 +70,8 @@ def get_vehicle_by_id(
     response_model=schemas.VehicleDatabase,
     summary="Add new vehicle",
     description="Create a new vehicle in the database")
-def add_vehicle(
-    vehicle_in: schemas.VehicleCreate,
+async def add_vehicle(
+    vehicle_in: schemas.VehicleCreate = Body(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -93,9 +93,9 @@ def add_vehicle(
     response_model=schemas.VehicleDatabase,
     summary="Update vehicle information",
     description="Update vehicle details in the database")
-def update_vehicle(
-    vehicle_id: PositiveInt,
-    vehicle_in: schemas.VehicleUpdate,
+async def update_vehicle(
+    vehicle_id: PositiveInt = Path(..., title=""),
+    vehicle_in: schemas.VehicleUpdate = Body(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -125,13 +125,47 @@ def update_vehicle(
     return schemas.VehicleDatabase(**jsonable_encoder(updated_vehicle))
 
 
+@router.post(
+    path="/set_driver/{vehicle_id}/",
+    response_model=schemas.VehicleDatabase,
+    summary="Put the driver in the vehicle",
+    description="Set or remove the driver from the vehicle with the specified ID")
+async def set_driver_in_vehicle(
+    vehicle_id: PositiveInt = Path(..., title=""),
+    driver_id: Optional[PositiveInt] = Body(None, title=""),
+    *,
+    db: Session = Depends(deps.get_db)
+) -> Any:
+    """***"""
+    try:
+        vehicle = crud.vehicle.get(db, id=vehicle_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    if not vehicle:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Vehicle with ID={vehicle_id} is not found in the database"
+        )
+    try:
+        updated_vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in={"driver_id": driver_id})
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to connect to the database: %s" % str(e)
+        )
+    return schemas.VehicleDatabase(**jsonable_encoder(updated_vehicle))
+
+
 @router.delete(
     path="/vehicle/{vehicle_id}/",
     response_model=schemas.VehicleDatabase,
     summary="Delete the vehicle",
     description="Remove the specified vehicle from the database")
-def delete_vehicle(
-    vehicle_id: PositiveInt,
+async def delete_vehicle(
+    vehicle_id: PositiveInt = Path(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
