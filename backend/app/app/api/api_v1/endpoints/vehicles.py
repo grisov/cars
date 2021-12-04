@@ -132,13 +132,13 @@ async def update_vehicle(
     description="Set or remove the driver from the vehicle with the specified ID")
 async def set_driver_in_vehicle(
     vehicle_id: PositiveInt = Path(..., title=""),
-    driver_id: Optional[PositiveInt] = Body(None, title=""),
+    data_in: schemas.DriverID = Body(..., title=""),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    """***"""
     try:
         vehicle = crud.vehicle.get(db, id=vehicle_id)
+        driver = crud.driver.get(db, id=data_in.driver_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -150,7 +150,7 @@ async def set_driver_in_vehicle(
             detail=f"Vehicle with ID={vehicle_id} is not found in the database"
         )
     try:
-        updated_vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in={"driver_id": driver_id})
+        updated_vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in={"driver_id": data_in.driver_id if driver else None})
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

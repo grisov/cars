@@ -44,3 +44,7 @@ class CreatedAt(BaseModel):
         if value is None:
             return value
         return datetime.strptime(value, "%d-%m-%Y").date()
+
+
+class DriverID(BaseModel):
+    driver_id: Optional[PositiveInt] = None
