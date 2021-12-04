@@ -50,9 +50,9 @@ async def get_drivers(
     path="/driver/{driver_id}/",
     response_model=schemas.DriverDatabase,
     summary="Detailed information about the driver",
-    description="Get complete information about the driver by his ID from the database")
+    description="Get complete information about the driver by ID from the database")
 async def get_driver_by_id(
-    driver_id: PositiveInt = Path(..., title=""),
+    driver_id: PositiveInt = Path(..., title="Driver ID in the database"),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -80,7 +80,7 @@ async def get_driver_by_id(
     summary="Add new driver",
     description="Create a new driver in the database")
 async def add_driver(
-    driver_in: schemas.DriverCreate = Body(..., title=""),
+    driver_in: schemas.DriverCreate = Body(..., title="Detailed information about the driver"),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -103,8 +103,8 @@ async def add_driver(
     summary="Update driver information",
     description="Update driver details with specified ID")
 async def update_driver(
-    driver_id: PositiveInt = Path(..., title=""),
-    driver_in: schemas.DriverUpdate = Body(..., title=""),
+    driver_id: PositiveInt = Path(..., title="Driver ID in the database"),
+    driver_in: schemas.DriverUpdate = Body(..., title="New information about the driver"),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
@@ -140,12 +140,13 @@ async def update_driver(
     summary="Delete the driver",
     description="Remove the driver with the specified ID from the database")
 async def delete_driver(
-    driver_id: PositiveInt = Path(..., title=""),
+    driver_id: PositiveInt = Path(..., title="Driver ID in the database"),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:
     """Delete the driver from the database.
     :param driver_id: driver ID in the database
+    :return: details of the removed driver
     """
     try:
         driver = crud.driver.remove(db, id=driver_id)

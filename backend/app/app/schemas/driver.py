@@ -47,4 +47,5 @@ class CreatedAt(BaseModel):
 
 
 class DriverID(BaseModel):
+    """Driver ID to be send to vehicle endpoints."""
     driver_id: Optional[PositiveInt] = None
