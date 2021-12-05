@@ -31,7 +31,7 @@ class CRUDVehicle(CRUDBase[Vehicle, VehicleCreate, VehicleUpdate]):
         with_driver: Optional[Literal["yes", "no"]] = None
     ) -> List[Vehicle]:
         """Get a list of vehicles which can be filtered by the presence of the driver.
-    :param with_driver: a sign of the presence or absence of a driver in the vehicle
+        :param with_driver: a sign of the presence or absence of a driver in the vehicle
         (if this value is empty, it is not taken into account)
         """
         query = db.query(Vehicle)
