@@ -19,6 +19,7 @@ def test_get_drivers_from_empty_db_without_filtering(
     """Check getting all drivers from the empty database without filtering."""
     response = client.get(PATH)
     assert response.status_code == 404, "There are no drivers in the database"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert "detail" in response.json(), "Detailed description of the response"
     assert response.json()["detail"] == "There are no drivers in the database that meet the specified criteria."
 
@@ -34,6 +35,7 @@ def test_get_existing_single_driver_without_filtering(
     crud.driver.create(db, obj_in=driver)
     response = client.get(PATH)
     assert response.status_code == 200, "The request was completed successfully"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert isinstance(response.json(), List), "Response data type"
     assert len(response.json()) == 1, "There is only one driver in the database"
 
@@ -73,6 +75,7 @@ def test_get_many_drivers_without_filtering(
         crud.driver.create(db, obj_in=driver)
     response = client.get(PATH)
     assert response.status_code == 200, "The request was completed successfully"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert isinstance(response.json(), List), "Response data type"
     assert len(response.json()) == number, "Number of drivers in the database"
 
@@ -90,6 +93,7 @@ def test_get_drivers_created_at_filter_gte_yesterday(
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
     assert response.status_code == 200, "The request was completed successfully"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert len(response.json()) == number, "All drivers are created later than yesterday"
 
 
@@ -106,6 +110,7 @@ def test_get_drivers_created_at_filter_gte_today(
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
     assert response.status_code == 200, "The request was completed successfully"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert len(response.json()) == number, "Today's creation date is included"
 
 
@@ -122,6 +127,7 @@ def test_get_drivers_created_at_filter_gte_tomorrow(
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
     assert response.status_code == 404, "All drivers added today do not meet the condition"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert "detail" in response.json(), "Detailed description of the response"
     assert response.json()["detail"] == "There are no drivers in the database that meet the specified criteria."
 
@@ -135,6 +141,7 @@ def test_get_drivers_created_at_gte_wrong_format(
     for dt_str in [dt.isoformat(), "hello", "123", "12 Sep 21", "07/03/2017", "23:10:22", None]:
         response = client.get(f"{PATH}?created_at__gte={dt_str}")
         assert response.status_code == 422, "Incorrect parameters format"
+        assert response.headers["Content-Type"] == "application/json", "Response content type"
         assert "detail" in response.json(), "Detailed description of the response"
 
 
@@ -151,6 +158,7 @@ def test_get_drivers_created_at_filter_lte_yesterday(
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
     assert response.status_code == 404, "All drivers added today do not meet the condition"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert "detail" in response.json(), "Detailed description of the response"
     assert response.json()["detail"] == "There are no drivers in the database that meet the specified criteria."
 
@@ -168,6 +176,7 @@ def test_get_drivers_created_at_filter_lte_today(
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
     assert response.status_code == 404, "All drivers added today do not meet the condition"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert "detail" in response.json(), "Detailed description of the response"
     assert response.json()["detail"] == "There are no drivers in the database that meet the specified criteria."
 
@@ -185,6 +194,7 @@ def test_get_drivers_created_at_filter_lte_tomorrow(
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
     assert response.status_code == 200, "The request was completed successfully"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert len(response.json()) == number, "All drivers are created before tomorrow"
 
 
@@ -197,6 +207,7 @@ def test_get_drivers_created_at_lte_wrong_format(
     for dt_str in [dt.isoformat(), "hello", "123", "12 Sep 21", "07/03/2017", "23:10:22", None]:
         response = client.get(f"{PATH}?created_at__lte={dt_str}")
         assert response.status_code == 422, "Incorrect parameters format"
+        assert response.headers["Content-Type"] == "application/json", "Response content type"
         assert "detail" in response.json(), "Detailed description of the response"
 
 
@@ -216,5 +227,6 @@ def test_get_drivers_created_at_filter_gte_and_lte(
     lte_str = datetime.strftime(lte, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={gte_str}&created_at__lte={lte_str}")
     assert response.status_code == 200, "The request was completed successfully"
+    assert response.headers["Content-Type"] == "application/json", "Response content type"
     assert isinstance(response.json(), List), "Response data type"
     assert len(response.json()) == number, "All drivers were added within the specified period"
