@@ -5,7 +5,7 @@ import re
 from sqlalchemy.orm import Session
 from app import crud, schemas
 from app.core.config import settings
-from app.tests.utils import random_lower_string
+from app.tests.utils import random_lower_string, random_plate_number
 
 PATH = f"{settings.API_V1_STR}/vehicles/vehicle"
 DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
@@ -44,7 +44,7 @@ def test_vehicle_get_correct(
     """Get the vehicle with correct ID from the database."""
     make = random_lower_string()
     model = random_lower_string()
-    plate_number = f"PS {randint(1000, 9999)} EJ"
+    plate_number = random_plate_number()
     vehicle_in = schemas.VehicleCreate(make=make, model=model, plate_number=plate_number)
     vehicle_in_db = crud.vehicle.create(db, obj_in=vehicle_in)
     assert vehicle_in_db.id > 0, "The vehicle was successfully added to the database"

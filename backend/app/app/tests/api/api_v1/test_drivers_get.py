@@ -12,7 +12,7 @@ PATH = f"{settings.API_V1_STR}/drivers/driver/"
 DATE_FORMAT = "%d-%m-%Y"
 
 
-def test_get_drivers_from_empty_db_without_filtering(
+def test_drivers_get_from_empty_db_without_filtering(
     client: TestClient,
     db: Session
 ) -> None:

@@ -20,7 +20,10 @@ class VehicleCreate(VehicleBase):
 
 class VehicleUpdate(VehicleBase):
     """Used when updating the information about the vehicle in the database."""
-    driver_id: Optional[PositiveInt]
+    make: Optional[str] = None
+    model: Optional[str] = None
+    plate_number: Optional[constr(regex="^[A-Z]{2}\s\d{4}\s[A-Z]{2}$")] = None  # example "AA 1234 OO"
+    driver_id: Optional[PositiveInt] = None
 
 
 class VehicleDatabase(VehicleBase):

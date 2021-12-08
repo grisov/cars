@@ -116,7 +116,7 @@ async def update_vehicle(
             detail=f"Vehicle with ID={vehicle_id} is not found in the database"
         )
     try:
-        updated_vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in=vehicle_in)
+        updated_vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in=vehicle_in, exclude_empty=True)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -155,7 +155,7 @@ async def set_driver_in_vehicle(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Vehicle with ID={vehicle_id} is not found in the database"
         )
-    if driver is not None:
+    if driver is not None or data_in.driver_id is None:
         try:
             vehicle = crud.vehicle.update(db, db_obj=vehicle, obj_in={"driver_id": data_in.driver_id})
         except Exception as e:

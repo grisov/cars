@@ -59,16 +59,24 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db: Session,
         *,
         db_obj: ModelType,
-        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]],
+        exclude_empty: bool = False
     ) -> ModelType:
-        """Update the object in the database."""
+        """Update the object in the database.
+        :param db: database session
+        :param db_obj: model object from the database
+        :param obj_in: data to update
+        :param exclude_empty: ignore empty values ​​when updating
+        """
         obj_data = jsonable_encoder(db_obj)
-        if isinstance(obj_in, dict):
-            update_data = obj_in
+        if isinstance(obj_in, Dict):
+            update_data: Dict[str, Any] = obj_in
         else:
-            update_data = obj_in.dict(exclude_unset=True)
+            update_data: Dict[str, Any] = obj_in.dict(exclude_unset=True)
         for field in obj_data:
             if field in update_data:
+                if exclude_empty and update_data[field] is None:
+                    continue
                 setattr(db_obj, field, update_data[field])
         db.add(db_obj)
         db.commit()
