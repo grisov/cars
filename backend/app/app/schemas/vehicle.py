@@ -9,6 +9,9 @@ class VehicleBase(BaseModel):
     model: str
     plate_number: constr(regex="^[A-Z]{2}\s\d{4}\s[A-Z]{2}$")  # example "AA 1234 OO"
 
+    class Config:
+        min_anystr_length = 2
+
 
 class VehicleCreate(VehicleBase):
     """Used when creating a vehicle record in the database."""
