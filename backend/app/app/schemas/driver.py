@@ -9,7 +9,7 @@ class DriverBase(BaseModel):
     last_name: str
 
     class Config:
-        min_anystr_length = 1
+        min_anystr_length = 2
 
 
 class DriverCreate(DriverBase):
