@@ -7,7 +7,7 @@ class VehicleBase(BaseModel):
     """Basic information about the vehicle."""
     make: str
     model: str
-    plate_number: constr(regex="^[A-Z]{2}\s\d{4}\s[A-Z]{2}$")  # example "AA 1234 OO"
+    plate_number: constr(regex="^[A-Z]{2}\s\d{4}\s[A-Z]{2}$")  # type: ignore
 
     class Config:
         min_anystr_length = 2
@@ -20,9 +20,9 @@ class VehicleCreate(VehicleBase):
 
 class VehicleUpdate(VehicleBase):
     """Used when updating the information about the vehicle in the database."""
-    make: Optional[str] = None
-    model: Optional[str] = None
-    plate_number: Optional[constr(regex="^[A-Z]{2}\s\d{4}\s[A-Z]{2}$")] = None  # example "AA 1234 OO"
+    make: Optional[str] = None  # type: ignore
+    model: Optional[str] = None  # type: ignore
+    plate_number: Optional[constr(regex="^[A-Z]{2}\s\d{4}\s[A-Z]{2}$")] = None  # type: ignore
     driver_id: Optional[PositiveInt] = None
 
 

@@ -23,7 +23,10 @@ async def get_vehicles(
     :param with_drivers: a sign of the presence or absence of a driver in the vehicle
     """
     try:
-        vehicles = crud.vehicle.get_filtered(db, with_driver=with_drivers)
+        vehicles = crud.vehicle.get_filtered(
+            db,
+            with_driver=True if with_drivers == "yes" else False if with_drivers == "no" else None
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

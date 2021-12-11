@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from app import crud, schemas
 from app.core.config import settings
-from app.tests.utils import random_lower_string
+from app.tests.utils import random_lower_string, create_drivers
 
 PATH = f"{settings.API_V1_STR}/drivers/driver/"
 DATE_FORMAT = "%d-%m-%Y"
@@ -67,7 +67,7 @@ def test_get_many_drivers_without_filtering(
     db: Session
 ) -> None:
     """Check getting existing many drivers from the database without filtering."""
-    number = randint(3, 19)
+    number = randint(10, 50)
     for i in range(number):
         first_name = random_lower_string()
         last_name = random_lower_string()
@@ -85,11 +85,8 @@ def test_get_drivers_created_at_filter_gte_yesterday(
     db: Session
 ) -> None:
     """Check getting existing drivers created after the specified date (yesterday)."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now() - timedelta(days=2)
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
     assert response.status_code == 200, "The request was completed successfully"
@@ -102,11 +99,8 @@ def test_get_drivers_created_at_filter_gte_today(
     db: Session
 ) -> None:
     """Check getting existing drivers created after the specified date (today)."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now()
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
     assert response.status_code == 200, "The request was completed successfully"
@@ -119,11 +113,8 @@ def test_get_drivers_created_at_filter_gte_tomorrow(
     db: Session
 ) -> None:
     """Check getting existing drivers created after the specified date (tomorrow)."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now() + timedelta(days=1)
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
     assert response.status_code == 404, "All drivers added today do not meet the condition"
@@ -150,11 +141,8 @@ def test_get_drivers_created_at_filter_lte_yesterday(
     db: Session
 ) -> None:
     """Check getting existing drivers created before the specified date (yesterday)."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now() - timedelta(days=1)
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
     assert response.status_code == 404, "All drivers added today do not meet the condition"
@@ -168,11 +156,8 @@ def test_get_drivers_created_at_filter_lte_today(
     db: Session
 ) -> None:
     """Check getting existing drivers created before the specified date (today)."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now()
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
     assert response.status_code == 404, "All drivers added today do not meet the condition"
@@ -186,11 +171,8 @@ def test_get_drivers_created_at_filter_lte_tomorrow(
     db: Session
 ) -> None:
     """Check getting existing drivers created before the specified date (tomorrow)."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now() + timedelta(days=2)
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
     assert response.status_code == 200, "The request was completed successfully"
@@ -216,13 +198,10 @@ def test_get_drivers_created_at_filter_gte_and_lte(
     db: Session
 ) -> None:
     """Check getting existing drivers created in a given period of time."""
-    number = randint(3, 19)
+    number = create_drivers(db)
     dt = datetime.now()
     gte = dt - timedelta(days=2)
     lte = dt + timedelta(days=2)
-    for i in range(number):
-        driver = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
-        crud.driver.create(db, obj_in=driver)
     gte_str = datetime.strftime(gte, DATE_FORMAT)
     lte_str = datetime.strftime(lte, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={gte_str}&created_at__lte={lte_str}")

@@ -72,7 +72,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if isinstance(obj_in, Dict):
             update_data: Dict[str, Any] = obj_in
         else:
-            update_data: Dict[str, Any] = obj_in.dict(exclude_unset=True)
+            update_data = obj_in.dict(exclude_unset=True)
         for field in obj_data:
             if field in update_data:
                 if exclude_empty and update_data[field] is None:
@@ -88,7 +88,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db: Session,
         *,
         id: int
-    ) -> ModelType:
+    ) -> Optional[ModelType]:
         """Delete the object from the database."""
         obj = db.query(self.model).get(id)
         if obj is not None:

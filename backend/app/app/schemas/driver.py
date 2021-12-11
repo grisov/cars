@@ -40,7 +40,7 @@ class CreatedAt(BaseModel):
     lte: Optional[date] = None
 
     @validator('*', pre=True)
-    def validate_input_date_format(cls, value):
+    def validate_input_date_format(cls, value: Optional[str]) -> Optional[date]:
         if value is None:
             return value
         return datetime.strptime(value, "%d-%m-%Y").date()
