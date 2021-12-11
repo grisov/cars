@@ -9,10 +9,10 @@ services:
     networks:
       external:
     volumes:
-      - backapp:/c/dev/cars/backend/app
+      - backapp:/c/dev/vehicles/backend/app
     build:
-      context: ./backend
-      dockerfile: .dockerfile
+      context: ./
+      dockerfile: backend/.dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
     ports:
