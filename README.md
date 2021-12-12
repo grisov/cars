@@ -60,7 +60,7 @@ Detailed examples of requests can be found in the `./examples/` directory.
 
 ### Tests
 
-The application has a collection of intergration and unit tests for all endpoints, CRUD (create-read-update-delete) objects and some other components.
+The application has a collection of intergration and unit tests for all endpoints, CRUD (create-read-update-delete) utils and some other components.
 
 After the docker container started, a set of all tests can be run as follows:
 
