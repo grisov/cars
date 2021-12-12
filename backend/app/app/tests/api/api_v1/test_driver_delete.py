@@ -52,6 +52,6 @@ def test_driver_delete_correct(
     assert driver["last_name"] == last_name, "The last name of the deleted driver"
     assert driver["id"] == driver_in_db.id, "Driver ID in the database"
     assert driver["created_at"], "Creation date is not empty"
-    assert datetime.strptime(driver["created_at"], DATETIME_FORMAT), "The creation date corresponds to the specified format"
+    assert datetime.strptime(driver["created_at"], DATETIME_FORMAT), "Date corresponds to the specified format"
     assert driver["updated_at"], "Update date is not empty"
-    assert datetime.strptime(driver["updated_at"], DATETIME_FORMAT), "The update date corresponds to the specified format"
+    assert datetime.strptime(driver["updated_at"], DATETIME_FORMAT), "Date corresponds to the specified format"

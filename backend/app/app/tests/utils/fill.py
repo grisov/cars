@@ -27,7 +27,7 @@ def create_vehicles(db: Session, with_driver: bool) -> int:
     """
     count = randint(20, 100)
     for i in range(count):
-        driver_id = None 
+        driver_id = None
         if with_driver:
             first_name = random_lower_string()
             last_name = random_lower_string()

@@ -1,11 +1,9 @@
 from datetime import datetime
 from fastapi.testclient import TestClient
-from random import randint
 import re
 from sqlalchemy.orm import Session
-from app import crud, schemas
 from app.core.config import settings
-from app.tests.utils import random_lower_string, random_plate_number, create_vehicles
+from app.tests.utils import create_vehicles
 
 PATH = f"{settings.API_V1_STR}/vehicles/vehicle/"
 DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
@@ -44,9 +42,9 @@ def test_vehicles_get_all(
         assert isinstance(vehicle["plate_number"], str), "The plate number of the vehicle"
         assert re.match(PLATE_NUMBER_FORMAT, vehicle["plate_number"]), "Vehicle plate number format"
         assert isinstance(vehicle["created_at"], str), "Date of registration of the vehicle in the database"
-        assert datetime.strptime(vehicle["created_at"], DATETIME_FORMAT), "The creation date corresponds to the specified format"
+        assert datetime.strptime(vehicle["created_at"], DATETIME_FORMAT), "Date corresponds to specified format"
         assert isinstance(vehicle["updated_at"], str), "Vehicle information update date"
-        assert datetime.strptime(vehicle["updated_at"], DATETIME_FORMAT), "The update date corresponds to the specified format"
+        assert datetime.strptime(vehicle["updated_at"], DATETIME_FORMAT), "Date corresponds to specified format"
         assert "driver_id" in vehicle, "Driver ID"
         assert len(vehicle) == 7, "The number of properties of each vehicle"
 
@@ -56,7 +54,7 @@ def test_vehicles_get_with_driver_only(
     db: Session
 ) -> None:
     """Get vehicles with driver only."""
-    without_driver = create_vehicles(db, with_driver=False)
+    create_vehicles(db, with_driver=False)
     with_driver = create_vehicles(db, with_driver=True)
     response = client.get(f"{PATH}?with_drivers=yes")
     assert response.status_code == 200, "Successful request"
@@ -71,7 +69,7 @@ def test_vehicles_get_without_driver_only(
 ) -> None:
     """Get vehicles without driver only."""
     without_driver = create_vehicles(db, with_driver=False)
-    with_driver = create_vehicles(db, with_driver=True)
+    create_vehicles(db, with_driver=True)
     response = client.get(f"{PATH}?with_drivers=no")
     assert response.status_code == 200, "Successful request"
     assert response.headers["Content-Type"] == "application/json", "Response content type"

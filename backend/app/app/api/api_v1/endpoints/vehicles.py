@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query, Path, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
-from app import crud, models, schemas
+from app import crud, schemas
 from app.api import deps
 
 router = APIRouter()
@@ -15,7 +15,7 @@ router = APIRouter()
     summary="Get vehicles list",
     description="The list of vehicles can be filtered based on the presence or absence of the driver")
 async def get_vehicles(
-    with_drivers: Optional[Literal["yes", "no"]] = Query(None, title="Sign of the presence of the driver in the vehicle"),
+    with_drivers: Optional[Literal["yes", "no"]] = Query(None, title="Sign of the presence of the driver"),
     *,
     db: Session = Depends(deps.get_db)
 ) -> Any:

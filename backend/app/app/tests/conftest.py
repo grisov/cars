@@ -22,7 +22,7 @@ def db(engine: Engine) -> Generator:
     """Create a separate transaction for each test function."""
     connection = engine.connect()
     # Begin a non-ORM transaction
-    transaction = connection.begin()
+    connection.begin()
     # Bind an individual Session to the connection
     db = Session(bind=connection)
     yield db

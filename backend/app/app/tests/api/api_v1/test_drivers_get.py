@@ -113,7 +113,7 @@ def test_get_drivers_created_at_filter_gte_tomorrow(
     db: Session
 ) -> None:
     """Check getting existing drivers created after the specified date (tomorrow)."""
-    number = create_drivers(db)
+    create_drivers(db)
     dt = datetime.now() + timedelta(days=1)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__gte={dt_str}")
@@ -141,7 +141,7 @@ def test_get_drivers_created_at_filter_lte_yesterday(
     db: Session
 ) -> None:
     """Check getting existing drivers created before the specified date (yesterday)."""
-    number = create_drivers(db)
+    create_drivers(db)
     dt = datetime.now() - timedelta(days=1)
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")
@@ -156,7 +156,7 @@ def test_get_drivers_created_at_filter_lte_today(
     db: Session
 ) -> None:
     """Check getting existing drivers created before the specified date (today)."""
-    number = create_drivers(db)
+    create_drivers(db)
     dt = datetime.now()
     dt_str = datetime.strftime(dt, DATE_FORMAT)
     response = client.get(f"{PATH}?created_at__lte={dt_str}")

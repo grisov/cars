@@ -32,8 +32,16 @@ def test_vehicle_create_with_wrong_values(
     (all schema string fields must be at least two characters long)
     """
     with pytest.raises(ValidationError):
-        schemas.VehicleCreate(make=random_lower_string()[0], model=random_lower_string(), plate_number=random_plate_number())
-        schemas.VehicleCreate(make=random_lower_string(), model=random_lower_string()[0], plate_number=random_plate_number())
-        schemas.VehicleCreate(make=random_lower_string()[0], model=random_lower_string()[0], plate_number=random_plate_number())
+        schemas.VehicleCreate(
+            make=random_lower_string()[0], model=random_lower_string(), plate_number=random_plate_number()
+        )
+        schemas.VehicleCreate(
+            make=random_lower_string(), model=random_lower_string()[0], plate_number=random_plate_number()
+        )
+        schemas.VehicleCreate(
+            make=random_lower_string()[0], model=random_lower_string()[0], plate_number=random_plate_number()
+        )
         for plate_number in ["", "Hello", -278, 123, 3.14, [], {}, None]:
-            schemas.VehicleCreate(make=random_lower_string(), model=random_lower_string(), plate_number=plate_number)
+            schemas.VehicleCreate(
+                make=random_lower_string(), model=random_lower_string(), plate_number=plate_number
+            )

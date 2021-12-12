@@ -10,7 +10,7 @@ def test_random_lower_string(execution_number: int) -> None:
     assert isinstance(string, str), "Instance of the string type"
     assert string.isalpha(), "Consists only of letters"
     assert string.islower(), "Only lower letters"
-    assert len(string)==32, "Fixed length string"
+    assert len(string) == 32, "Fixed length string"
 
 
 @pytest.mark.parametrize("execution_number", range(100))
@@ -20,7 +20,7 @@ def test_random_email(execution_number: int) -> None:
     assert isinstance(string, str), "Instance of the string type"
     assert re.match(r"^[a-z]{32}@[a-z]{32}\.[a-z]{2,5}$", string), "Corresponds to the regular expression"
     assert string.islower(), "Only lower letters"
-    assert len(string) >= 32*2+4, "Fixed length string"
+    assert len(string) >= 32 * 2 + 4, "Fixed length string"
 
 
 @pytest.mark.parametrize("execution_number", range(100))

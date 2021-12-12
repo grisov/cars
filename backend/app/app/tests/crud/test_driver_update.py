@@ -1,5 +1,4 @@
 import pytest
-from datetime import datetime
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app import crud, schemas, models

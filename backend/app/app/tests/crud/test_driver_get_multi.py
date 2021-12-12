@@ -1,6 +1,6 @@
 from random import randint
 from sqlalchemy.orm import Session
-from app import crud, schemas, models
+from app import crud, models
 from app.tests.utils import create_drivers
 
 
@@ -65,7 +65,7 @@ def test_drivers_get_multi_skip_and_limit(
     number = create_drivers(db)
     skip = randint(5, 9)
     limit = randint(10, 19)
-    assert skip >=5, "Skip at least the first 5 entries"
+    assert skip >= 5, "Skip at least the first 5 entries"
     assert limit < number, "Limited number of drivers"
     assert skip < limit < number, "Correct values"
     drivers = crud.driver.get_multi(db, skip=skip, limit=limit)

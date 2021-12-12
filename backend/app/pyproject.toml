@@ -22,6 +22,7 @@ pytest-mock = "^3.6.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
+types-Markdown = "^3.3.9"
 black = "^21.11b1"
 isort = "^5.9.3"
 autoflake = "^1.4"

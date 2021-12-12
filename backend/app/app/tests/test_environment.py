@@ -21,12 +21,12 @@ def test_environment_variables() -> None:
             assert value is not None, "The parameter of the same name is available in the settings object"
             assert isinstance(value, variables[var]), "The parameter contains the corresponding data type"
         else:
-            assert hasattr(settings, var) == False, "There is no parameter with the appropriate name in the settings object"
+            assert not hasattr(settings, var), "There is no parameter with the appropriate name in settings"
     # Some additional clarifications
     assert settings.HOSTNAME == os.getenv("DOMAIN"), "HOSTNAME and DOMAIN are match"
-    assert os.getenv("DOMAIN") in settings.SERVER_HOST, "The server host contains the domain name"  # type: ignore
+    assert os.getenv("DOMAIN") in settings.SERVER_HOST, "Server host contains the domain name"  # type: ignore
     assert isinstance(settings.API_V1_STR, str), "This prefix is defined only in the settings object"
     if os.getenv("DOMAIN") == "localhost":
         assert os.getenv("INSTALL_DEV") == "true", "Variable value only on localhost"
     else:
-        assert os.getenv("INSTALL_DEV") == "false", "The variable value when using the container on the production"
+        assert os.getenv("INSTALL_DEV") == "false", "Value when using the container on the production"

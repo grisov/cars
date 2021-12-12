@@ -1,6 +1,5 @@
 from datetime import datetime
 from fastapi.testclient import TestClient
-from random import randint
 import re
 from sqlalchemy.orm import Session
 from app import crud, schemas
@@ -59,6 +58,6 @@ def test_vehicle_delete_correct(
     assert vehicle["id"] == vehicle_in_db.id, "vehicle ID in the database"
     assert "driver_id" in vehicle, "Driver ID in the vehicle"
     assert vehicle["created_at"], "Creation date is not empty"
-    assert datetime.strptime(vehicle["created_at"], DATETIME_FORMAT), "The creation date corresponds to the specified format"
+    assert datetime.strptime(vehicle["created_at"], DATETIME_FORMAT), "Date corresponds to the specified format"
     assert vehicle["updated_at"], "Update date is not empty"
-    assert datetime.strptime(vehicle["updated_at"], DATETIME_FORMAT), "The update date corresponds to the specified format"
+    assert datetime.strptime(vehicle["updated_at"], DATETIME_FORMAT), "Date corresponds to the specified format"

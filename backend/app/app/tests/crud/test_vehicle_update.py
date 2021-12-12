@@ -1,5 +1,4 @@
 import pytest
-from datetime import datetime
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app import crud, schemas, models
@@ -18,13 +17,13 @@ def test_vehicle_update_using_schema(
     new_make = random_lower_string()
     new_model = random_lower_string()
     new_plate_number = random_plate_number()
-    new_vehicle_in = schemas.VehicleUpdate(make=make, model=model, plate_number=plate_number)
+    new_vehicle_in = schemas.VehicleUpdate(make=new_make, model=new_model, plate_number=new_plate_number)
     vehicle_up = crud.vehicle.update(db, db_obj=vehicle, obj_in=new_vehicle_in)
     assert isinstance(vehicle_up, models.Vehicle), "The created object corresponds to the declared model"
     assert vehicle_up.id == vehicle.id, "The vehicle ID in the database"
-    assert vehicle_up.make == vehicle.make, "Manufacturer name of the vehicle"
-    assert vehicle_up.model == vehicle.model, "The model of the vehicle"
-    assert vehicle_up.plate_number == vehicle.plate_number, "The plate number of the vehicle"
+    assert vehicle_up.make == new_make, "Manufacturer name of the vehicle"
+    assert vehicle_up.model == new_model, "The model of the vehicle"
+    assert vehicle_up.plate_number == new_plate_number, "The plate number of the vehicle"
     assert vehicle_up.created_at == vehicle.created_at, "The date of the vehicle registration"
     assert vehicle_up.updated_at <= vehicle.updated_at, "Vehicle information update date"
     assert vehicle_up.driver_id == vehicle.driver_id, "Driver ID in the vehicle"
@@ -37,11 +36,19 @@ def test_vehicle_update_using_schema_with_wrong_values(
     (all schema string fields must be at least two characters long)
     """
     with pytest.raises(ValidationError):
-        schemas.VehicleUpdate(make=random_lower_string()[0], model=random_lower_string(), plate_number=random_plate_number())
-        schemas.VehicleUpdate(make=random_lower_string(), model=random_lower_string()[0], plate_number=random_plate_number())
-        schemas.VehicleUpdate(make=random_lower_string()[0], model=random_lower_string()[0], plate_number=random_plate_number())
+        schemas.VehicleUpdate(
+            make=random_lower_string()[0], model=random_lower_string(), plate_number=random_plate_number()
+        )
+        schemas.VehicleUpdate(
+            make=random_lower_string(), model=random_lower_string()[0], plate_number=random_plate_number()
+        )
+        schemas.VehicleUpdate(
+            make=random_lower_string()[0], model=random_lower_string()[0], plate_number=random_plate_number()
+        )
         for plate_number in ["", "Hello", -278, 123, 3.14, [], {}, None]:
-            schemas.VehicleUpdate(make=random_lower_string(), model=random_lower_string(), plate_number=plate_number)
+            schemas.VehicleUpdate(
+                make=random_lower_string(), model=random_lower_string(), plate_number=plate_number
+            )
 
 
 def test_vehicle_update_using_dict_make_only(
@@ -118,7 +125,9 @@ def test_vehicle_update_using_dict_make_and_plate_number(
     vehicle = crud.vehicle.create(db, obj_in=vehicle_in)
     new_make = random_lower_string()
     new_plate_number = random_plate_number()
-    vehicle_up = crud.vehicle.update(db, db_obj=vehicle, obj_in={"make": new_make, "plate_number": new_plate_number})
+    vehicle_up = crud.vehicle.update(
+        db, db_obj=vehicle, obj_in={"make": new_make, "plate_number": new_plate_number}
+    )
     assert isinstance(vehicle_up, models.Vehicle), "The created object corresponds to the declared model"
     assert vehicle_up.id == vehicle.id, "The vehicle ID in the database"
     assert vehicle_up.make == new_make, "New manufacturer name of the vehicle"
@@ -140,7 +149,9 @@ def test_vehicle_update_using_dict_model_and_plate_number(
     vehicle = crud.vehicle.create(db, obj_in=vehicle_in)
     new_model = random_lower_string()
     new_plate_number = random_plate_number()
-    vehicle_up = crud.vehicle.update(db, db_obj=vehicle, obj_in={"model": new_model, "plate_number": new_plate_number})
+    vehicle_up = crud.vehicle.update(
+        db, db_obj=vehicle, obj_in={"model": new_model, "plate_number": new_plate_number}
+    )
     assert isinstance(vehicle_up, models.Vehicle), "The created object corresponds to the declared model"
     assert vehicle_up.id == vehicle.id, "The vehicle ID in the database"
     assert vehicle_up.make == make, "Manufacturer name of the vehicle"

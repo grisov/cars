@@ -9,7 +9,10 @@ def random_lower_string() -> str:
 
 def random_email() -> str:
     """Generate a random email address."""
-    return f"{random_lower_string()}@{random_lower_string()}.{random.choice(('com', 'net', 'biz', 'info', 'name', 'eu', 'ua'))}"
+    return (
+        f"{random_lower_string()}@{random_lower_string()}."
+        f"{random.choice(('com', 'net', 'biz', 'info', 'name', 'eu', 'ua'))}"
+    )
 
 
 def random_plate_number() -> str:

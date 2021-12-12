@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 if TYPE_CHECKING:
-    from .driver import Driver
+    from .driver import Driver  # noqa F401
 
 
 class Vehicle(Base):

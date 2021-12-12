@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query, Path, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import PositiveInt, ValidationError
 from sqlalchemy.orm import Session
-from app import crud, models, schemas
+from app import crud, schemas
 from app.api import deps
 
 router = APIRouter()

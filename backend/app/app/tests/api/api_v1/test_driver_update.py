@@ -55,9 +55,9 @@ def test_driver_update_correct(
     assert driver["last_name"] != driver_in1.last_name, "The previous last name of the driver"
     assert driver["id"] == driver_in_db.id, "Driver ID in the database"
     assert driver["created_at"], "Creation date is not empty"
-    assert datetime.strptime(driver["created_at"], DATETIME_FORMAT), "The creation date corresponds to the specified format"
+    assert datetime.strptime(driver["created_at"], DATETIME_FORMAT), "Date corresponds to the specified format"
     assert driver["updated_at"], "Update date is not empty"
-    assert datetime.strptime(driver["updated_at"], DATETIME_FORMAT), "The update date corresponds to the specified format"
+    assert datetime.strptime(driver["updated_at"], DATETIME_FORMAT), "Date corresponds to the specified format"
 
 
 def test_driver_update_only_first_name(

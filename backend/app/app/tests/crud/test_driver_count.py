@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from random import randint
-from app import crud, schemas
-from app.tests.utils import random_lower_string
+from app import crud
+from app.tests.utils import create_drivers
 
 
 def test_drivers_count_empty(
@@ -16,11 +15,6 @@ def test_drivers_count(
     db: Session
 ) -> None:
     """Get the number of the previously created drivers."""
-    number = randint(10, 100)
-    for i in range(number):
-        first_name = random_lower_string()
-        last_name = random_lower_string()
-        driver_in = schemas.DriverCreate(first_name=first_name, last_name=last_name)
-        driver = crud.driver.create(db, obj_in=driver_in)
+    number = create_drivers(db)
     count = crud.driver.count(db)
     assert count == number, "The number of drivers is correct"

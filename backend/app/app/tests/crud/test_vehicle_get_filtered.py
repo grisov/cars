@@ -30,7 +30,7 @@ def test_vehicles_get_filtered_without_drivers_only(
 ) -> None:
     """Get vehicles without drivers from the database."""
     without_driver = create_vehicles(db, with_driver=False)
-    with_driver = create_vehicles(db, with_driver=True)
+    create_vehicles(db, with_driver=True)
     vehicles = crud.vehicle.get_filtered(db, with_driver=False)
     assert len(vehicles) == without_driver, "Only vehicles without driver"
     for vehicle in vehicles:
@@ -41,7 +41,7 @@ def test_vehicles_get_filtered_with_drivers_only(
     db: Session
 ) -> None:
     """Get vehicles with drivers from the database."""
-    without_driver = create_vehicles(db, with_driver=False)
+    create_vehicles(db, with_driver=False)
     with_driver = create_vehicles(db, with_driver=True)
     vehicles = crud.vehicle.get_filtered(db, with_driver=True)
     assert len(vehicles) == with_driver, "Only vehicles with driver"

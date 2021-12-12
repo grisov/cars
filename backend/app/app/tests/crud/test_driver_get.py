@@ -1,4 +1,3 @@
-from datetime import datetime
 from random import randint
 from sqlalchemy.orm import Session
 from app import crud, schemas, models
@@ -35,7 +34,7 @@ def test_driver_get_correct(
     driver = crud.driver.get(db, id=created_driver.id)
     assert isinstance(driver, models.Driver), "The created object corresponds to the declared model"
     assert driver.id == created_driver.id, "The driver ID"
-    assert driver.first_name== created_driver.first_name, "The first name of the driver"
+    assert driver.first_name == created_driver.first_name, "The first name of the driver"
     assert driver.last_name == created_driver.last_name, "The last name of the driver"
     assert driver.created_at == created_driver.created_at, "Date of the driver registration"
     assert driver.updated_at == created_driver.updated_at, "Driver information update date"

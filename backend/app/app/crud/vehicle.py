@@ -36,9 +36,9 @@ class CRUDVehicle(CRUDBase[Vehicle, VehicleCreate, VehicleUpdate]):
         """
         query = db.query(Vehicle)
         if with_driver:
-            query = query.filter(Vehicle.driver_id != None)
+            query = query.filter(Vehicle.driver_id.isnot(None))
         elif with_driver is False:
-            query = query.filter(Vehicle.driver_id == None)
+            query = query.filter(Vehicle.driver_id.is_(None))
         return query.all()
 
 

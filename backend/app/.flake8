@@ -1,3 +1,8 @@
 [flake8]
-max-line-length = 110
+max-line-length = 115
 exclude = .git,__pycache__,__init__.py,.mypy_cache,.pytest_cache
+
+ignore =
+    E731  # do not assign a lambda expression, use a def
+    F722  # syntax error in forward annotation
+    W605  # invalid escape sequence '\s'

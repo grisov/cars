@@ -7,7 +7,7 @@
 
 import requests
 
-id = 7  # the ID of the driver in the database
+id = 3  # the ID of the driver in the database
 url = f"http://localhost:8000/drivers/driver/{id}/"
 
 # Make request

@@ -22,6 +22,6 @@ def test_vehicles_count(
         model = random_lower_string()
         plate_number = random_plate_number()
         vehicle_in = schemas.VehicleCreate(make=make, model=model, plate_number=plate_number)
-        vehicle = crud.vehicle.create(db, obj_in=vehicle_in)
+        crud.vehicle.create(db, obj_in=vehicle_in)
     count = crud.vehicle.count(db)
     assert count == number, "The number of the vehicles is correct"

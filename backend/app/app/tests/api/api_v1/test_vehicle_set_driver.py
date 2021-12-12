@@ -15,7 +15,9 @@ def test_vehicle_set_existing_driver(
     driver_in = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
     driver = crud.driver.create(db, obj_in=driver_in)
     assert driver.id > 0, "The driver has been successfully added to the database"
-    vehicle_in = schemas.VehicleCreate(make=random_lower_string(), model=random_lower_string(), plate_number=random_plate_number())
+    vehicle_in = schemas.VehicleCreate(
+        make=random_lower_string(), model=random_lower_string(), plate_number=random_plate_number()
+    )
     vehicle = crud.vehicle.create(db, obj_in=vehicle_in)
     assert vehicle.id > 0, "The vehicle has been successfully added to the database"
     assert vehicle.driver_id is None, "By default, there is no driver in the vehicle"
@@ -37,7 +39,9 @@ def test_vehicle_set_non_existing_driver(
     driver_in = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
     driver = crud.driver.create(db, obj_in=driver_in)
     assert driver.id > 0, "The driver has been successfully added to the database"
-    vehicle_in = schemas.VehicleCreate(make=random_lower_string(), model=random_lower_string(), plate_number=random_plate_number())
+    vehicle_in = schemas.VehicleCreate(
+        make=random_lower_string(), model=random_lower_string(), plate_number=random_plate_number()
+    )
     vehicle = crud.vehicle.create(db, obj_in=vehicle_in, driver_id=driver.id)
     assert vehicle.id > 0, "The vehicle has been successfully added to the database"
     assert vehicle.driver_id == driver.id, "The driver is present in the vehicle"
@@ -57,7 +61,9 @@ def test_vehicle_unset_driver(
     driver_in = schemas.DriverCreate(first_name=random_lower_string(), last_name=random_lower_string())
     driver = crud.driver.create(db, obj_in=driver_in)
     assert driver.id > 0, "The driver has been successfully added to the database"
-    vehicle_in = schemas.VehicleCreate(make=random_lower_string(), model=random_lower_string(), plate_number=random_plate_number())
+    vehicle_in = schemas.VehicleCreate(
+        make=random_lower_string(), model=random_lower_string(), plate_number=random_plate_number()
+    )
     vehicle = crud.vehicle.create(db, obj_in=vehicle_in, driver_id=driver.id)
     assert vehicle.id > 0, "The vehicle has been successfully added to the database"
     assert vehicle.driver_id == driver.id, "The driver is present in the vehicle"

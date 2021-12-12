@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
-from random import randint
 from sqlalchemy.orm import Session
-from app import crud, schemas, models
+from app import crud, models
 from app.tests.utils import create_drivers
 
 
@@ -56,7 +55,7 @@ def test_drivers_get_filtered_gte_tomorrow(
 ) -> None:
     """Get drivers created after tomorrow."""
     gte = datetime.now() + timedelta(days=1)
-    number = create_drivers(db)
+    create_drivers(db)
     drivers = crud.driver.get_filtered(db, gte=gte, lte=None)
     assert len(drivers) == 0, "There is no drivers registered after tomorrow"
 
@@ -66,7 +65,7 @@ def test_drivers_get_filtered_lte_yesterday(
 ) -> None:
     """Get drivers created before yesterday."""
     lte = datetime.now() - timedelta(days=1)
-    number = create_drivers(db)
+    create_drivers(db)
     drivers = crud.driver.get_filtered(db, gte=None, lte=lte)
     assert len(drivers) == 0, "There is no drivers registered before yesterday"
 
@@ -76,7 +75,7 @@ def test_drivers_get_filtered_lte_today(
 ) -> None:
     """Get drivers created before today."""
     lte = datetime.now()
-    number = create_drivers(db)
+    create_drivers(db)
     drivers = crud.driver.get_filtered(db, gte=None, lte=lte)
     assert len(drivers) == 0, "There is no drivers registered before today"
 
