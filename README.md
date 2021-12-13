@@ -56,6 +56,25 @@ All endpoints are fully meet the requirements of the [task](https://docs.google.
 Detailed examples of requests can be found in the `./examples/` directory.
 
 
+## Extra features
+
+Because the SQLite database file is created and located inside the running docker container, all data in it is stored only while the docker container is running.
+
+To quickly populate a database with randomly generated data, you can use the following command:
+
+```bash
+docker compose exec backend python -c "from app.utils import fill; fill()"
+```
+
+After that you can retrieve the contents of one of the tables using the following query from any external Python interpreter:
+
+```python
+import requests
+response = requests.get("http://localhost:8000/vehicles/vehicle/")
+print(response.json())
+```
+
+
 ## Tools
 
 ### Tests

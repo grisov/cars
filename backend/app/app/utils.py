@@ -5,7 +5,8 @@ from app.tests.utils import random_plate_number
 
 
 def fill(count: int = 100) -> None:
-    """Fill the database with random values."""
+    """Fill the database with randomly generated values."""
+    print("The database is filling with randomly generated data...")
     db = SessionLocal()
     for i in range(count):
         first_name = choice((
